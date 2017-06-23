@@ -6,17 +6,17 @@ new Vue({
         return {
             experimentos: {
                 selectedOption: null,
-                options: [{text:"Sim", value: "não"}],
+                options: [],
                 isLoading: false
             },
             modelos: {
                 selectedOption: null,
-                options: [{text:"Sim", value: "não"}],
+                options: [],
                 isLoading: false
             },
             bibliotecas: {
                 selectedOption: null,
-                options: [{text:"Sim", value: "não"}],
+                options: [],
                 isLoading: false
             },
             graph: {
@@ -57,7 +57,11 @@ new Vue({
             var that = this;
             that.bibliotecas.isLoading = true;
 
-            jQuery.getJSON('/bibliotecas/' + that.experimentos.selectedOption.value + "/" + that.modelos.selectedOption.value , function(json) {
+            var url = '/bibliotecas/'
+                + that.experimentos.selectedOption.value + '/'
+                + that.modelos.selectedOption.value;
+
+            jQuery.getJSON(url, function(json) {
                 that.bibliotecas.isLoading = false;
                 that.bibliotecas.options = json;
             });
@@ -68,6 +72,7 @@ new Vue({
 
             var url = '/graph/'
                 + that.experimentos.selectedOption.value + '/'
+                + that.modelos.selectedOption.value + '/'
                 + that.bibliotecas.selectedOption.value;
 
             jQuery.getJSON(url, function(json) {
@@ -82,6 +87,7 @@ new Vue({
 
             var url = '/table/'
                 + that.experimentos.selectedOption.value + '/'
+                + that.modelos.selectedOption.value + '/'
                 + that.bibliotecas.selectedOption.value;
 
             jQuery.getJSON(url, function(json) {
@@ -94,11 +100,13 @@ new Vue({
             var that = this;
             that.diff.isLoading = true;
 
-            // /diff/:experimentoId/:bibliotecaId/:heuriticaId/:rodada
+            // /diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada
             var url = '/diff/'
                 + that.experimentos.selectedOption.value + '/'
+                + that.modelos.selectedOption.value + '/'
                 + that.bibliotecas.selectedOption.value + '/'
-                + heuriticaId + '/' + rodada;
+                + heuriticaId + '/'
+                + rodada;
 
             jQuery.get(url, function(data) {
                 that.diff.isLoading = false;

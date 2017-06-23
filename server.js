@@ -73,7 +73,7 @@ app.get('/bibliotecas/:experimentoId/:modeloId', function (req, res) {
     responseJSON(res, json);
 });
 
-app.get('/graph/:experimentoId/:bibliotecaId', function (req, res) {
+app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 
     var trace1 = {
         y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
@@ -121,7 +121,7 @@ app.get('/graph/:experimentoId/:bibliotecaId', function (req, res) {
     responseJSON(res, data);
 });
 
-app.get('/table/:experimentoId/:bibliotecaId', function (req, res) {
+app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
     var data = [];
 
     for (var i = 0; i < 30; i++) {
@@ -132,8 +132,7 @@ app.get('/table/:experimentoId/:bibliotecaId', function (req, res) {
 });
 
 
-app.get('/diff/:experimentoId/:bibliotecaId/:heuriticaId/:rodada', function(req, res) {
-
+app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', function(req, res) {
     // 1. Pegar os arquivos
     var leftFile = "abc def ghi";
     var rightFile = "abc def ghij";
