@@ -52,14 +52,22 @@ app.get('/modelos/:experimentoId', function (req, res) {
 });
 
 
-app.get('/bibliotecas/:experimentoId', function (req, res) {
+app.get('/bibliotecas/:experimentoId/:modeloId', function (req, res) {
+    let json = [];
     console.log(req.params.experimentoId);
-    let json = [
-        { "text": "Biblioteca 1", "value": 1 },
-        { "text": "Biblioteca 2", "value": 2 },
-        { "text": "Biblioteca 3", "value": 3 },
-        { "text": "Biblioteca 4", "value": 4 },
-    ];
+    console.log(req.params.modeloId);
+
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId);
+    
+    var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
+
+    lista.forEach(function(element) {
+        json.push({ "text": element , "value": element });
+    }, this);
+
+    responseJSON(res, json);
 
     responseJSON(res, json);
 });
