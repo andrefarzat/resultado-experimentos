@@ -19,8 +19,13 @@ new Vue({
                 data: []
             },
             table: {
+                isLoading: false,
                 headers: [],
                 rows: []
+            },
+            diff: {
+                isLoading: false,
+                txt: ""
             }
         };
     },
@@ -69,6 +74,21 @@ new Vue({
                 that.table.isLoading = false;
                 that.table.headers = Object.keys(json[0]);
                 that.table.rows = json;
+            });
+        },
+        loadDiff: function(heuriticaId, rodada) {
+            var that = this;
+            that.diff.isLoading = true;
+
+            // /diff/:experimentoId/:bibliotecaId/:heuriticaId/:rodada
+            var url = '/diff/'
+                + that.experimentos.selectedOption.value + '/'
+                + that.bibliotecas.selectedOption.value + '/'
+                + heuriticaId + '/' + rodada;
+
+            jQuery.get(url, function(data) {
+                that.diff.isLoading = false;
+                that.diff.text = data;
             });
         }
     },

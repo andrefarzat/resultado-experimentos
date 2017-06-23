@@ -4,10 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "postinstall": "git clone https://github.com/prettydiff/prettydiff.git"
+    "start": "node server.js"
   },
   "dependencies": {
+    "diff2html": "^2.3.0",
+    "difflib": "^0.2.4",
     "express": "^4.15.3"
   }
 }

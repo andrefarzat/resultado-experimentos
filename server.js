@@ -1,6 +1,7 @@
-const express = require('express')
-const app = express()
+const express = require('express');
+const app = express();
 const path = require('path');
+const difflib = require('difflib');
 
 function responseJSON(res, json) {
     if (typeof json != "string") {
@@ -101,17 +102,26 @@ app.get('/table/:experimentoId/:bibliotecaId', function(req, res) {
 });
 
 
-app.get('/diff', function(req, res) { // /:experimentoId/:bibliotecaId/:heuriticaId/:rodada
+app.get('/diff/:experimentoId/:bibliotecaId/:heuriticaId/:rodada', function(req, res) {
 
-    var prettydiff = require("./prettydiff"),
-        args = {
-            source: "asdf",
-            diff  : "asdd",
-            lang  : "text"
-        },
-        output = prettydiff(args);
+    // 1. Pegar os arquivos
+    var leftFile = "abc def ghi";
+    var rightFile = "abc def ghij";
 
-    res.send(output);
+    // 2. Fazer o diff entre eles
+    var diff = difflib.unifiedDiff(leftFile.split('\n'), rightFile.split('\n'), {
+        fromfile: "esquerda",
+        tofile: "direita"
+    });
+
+    // 3. Preparar o texto do diff
+    var txt = [
+        "diff --git a/index b/index",
+        "index c732ee8..e49ef2d 100644",
+    ].concat(diff);
+
+    // 4. Enviar
+    res.send(txt.join('\n'));
 });
 
 
