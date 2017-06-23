@@ -25,7 +25,7 @@
 
     </head>
     <body>
-        <div id="app" v-cloak @click="checkToCloseModal">
+        <div id="app" v-cloak>
 
             <div class="container">
 
@@ -78,33 +78,24 @@
                 </table>
             </div>
 
-            <modal v-if="showModal" @close="showModal = false">
-                <div slot="header">{{ diff.data.title }}</div>
-            </modal>
+            <div id="thedialog" class="modal fade" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title">{{ diff.data.title }}</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div id="diff"></div>
+                        </div>
+                    </div><!-- /.modal-content -->
+                </div><!-- /.modal-dialog -->
+            </div><!-- /.modal -->
         </div>
 
-        <!-- template for the modal component -->
-        <script type="text/x-template" id="modal-template">
-            <transition name="modal">
-                <div class="modal-mask">
-                    <div class="modal-wrapper">
-                        <div class="modal-container">
-
-                            <div class="modal-header">
-                                <a class="mylink pull-right" @click="$emit('close')">&times;</a>
-                                <slot name="header">default header</slot>
-                            </div>
-
-                            <div class="modal-body">
-                                <div id="diff"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </transition>
-        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.3.0/diff2html.min.js"></script>

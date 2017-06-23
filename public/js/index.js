@@ -114,28 +114,14 @@ new Vue({
             jQuery.get(url, function(data) {
                 that.diff.isLoading = false;
                 that.diff.data = data;
-                that.showModal = true;
 
                 setTimeout(function() {
                     var d = new Diff2HtmlUI({diff: data.text})
                     d.draw('#diff', {showFiles: false, matching: 'lines'});
+
+                    jQuery('#thedialog').modal();
                 }, 100);
             });
-        },
-        checkToCloseModal: function(ev) {
-            var target = ev.target;
-
-            while (target.tagName.toLowerCase() !== 'html') {
-                console.log(target.tagName.toLowerCase());
-
-                if (target.classList.contains('modal-container')) {
-                    return;
-                }
-
-                target = target.parentElement;
-            }
-
-            this.showModal = false;
         }
     },
     mounted: function() {
