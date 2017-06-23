@@ -34,6 +34,24 @@ app.get('/experimentos', function (req, res) {
     responseJSON(res, json);
 });
 
+app.get('/modelos/:experimentoId', function (req, res) {
+    let json = [];
+    console.log(req.params.experimentoId);
+
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId);
+    
+    var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
+
+    lista.forEach(function(element) {
+        json.push({ "text": element , "value": element });
+    }, this);
+
+    responseJSON(res, json);
+});
+
+
 app.get('/bibliotecas/:experimentoId', function (req, res) {
     console.log(req.params.experimentoId);
     let json = [
