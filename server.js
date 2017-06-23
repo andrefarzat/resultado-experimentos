@@ -101,6 +101,20 @@ app.get('/table/:experimentoId/:bibliotecaId', function(req, res) {
 });
 
 
+app.get('/diff', function(req, res) { // /:experimentoId/:bibliotecaId/:heuriticaId/:rodada
+
+    var prettydiff = require("./prettydiff"),
+        args = {
+            source: "asdf",
+            diff  : "asdd",
+            lang  : "text"
+        },
+        output = prettydiff(args);
+
+    res.send(output);
+});
+
+
 app.listen(3000, function () {
     console.log('Example app listening on port 3000!')
 });
