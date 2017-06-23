@@ -1,0 +1,6 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+underscore;Original;-;1;0;16161;0;undefined;NaN;0
+underscore;RD;6;1;0;15072;0,06738444403192871;18256;0,06288178224937119;11017,643
+underscore;HC3;0;1;0;15147;0,06274364210135512;18038;0,07407217288640214;31869,969
+underscore;HC4;N/A;1;0;16161;0;undefined;NaN;0
+underscore;HC5;N/A;1;0;16161;0;undefined;NaN;0

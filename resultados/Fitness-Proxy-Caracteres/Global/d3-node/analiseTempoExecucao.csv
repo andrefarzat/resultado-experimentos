@@ -1,0 +1,6 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Time Spent
+d3-node;Original;-;1;0;1673;0;0
+d3-node;RD;0;1;0;1268;0,242080095636581;1036,412
+d3-node;HC3;0;1;0;1238;0,26001195457262405;633,656
+d3-node;HC4;0;1;0;1238;0,26001195457262405;1290,109
+d3-node;HC5;0;1;0;1238;0,26001195457262405;1301,373
