@@ -19,17 +19,24 @@
 
             <div class="container">
 
-                <h1 class="text-center">Detalhes do Resultado</h1>
+                <h1 class="text-center">Resultados dos Experimentos</h1>
 
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label">Experimento</label>
+                        <label class="col-sm-2 control-label">Fitness</label>
                         <div class="col-sm-10">
-                            <multiselect v-model="experimentos.selectedOption" :options="experimentos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="experimentos.isLoading" placeholder="Selecione o experimento" :hide-selected="true" @input="loadBibliotecas"></multiselect>
+                            <multiselect v-model="experimentos.selectedOption" :options="experimentos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="experimentos.isLoading" placeholder="Selecione o experimento" :hide-selected="true" @input="loadModelos"></multiselect>
                         </div>
                     </div>
 
                     <div class="form-group" v-if="experimentos.selectedOption">
+                        <label class="col-sm-2 control-label">Ranking</label>
+                        <div class="col-sm-10">
+                            <multiselect v-model="modelos.selectedOption" :options="modelos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="modelos.isLoading" placeholder="Selecione o modelo" :hide-selected="true" @input="loadBibliotecas"></multiselect>
+                        </div>
+                    </div>
+
+                    <div class="form-group" v-if="modelos.selectedOption">
                         <label class="col-sm-2 control-label">Biblioteca</label>
                         <div class="col-sm-10">
                             <multiselect v-model="bibliotecas.selectedOption" :options="bibliotecas.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="bibliotecas.isLoading" placeholder="Selecione a biblioteca" :hide-selected="true" @input="loadGraph(); loadTable()"></multiselect>

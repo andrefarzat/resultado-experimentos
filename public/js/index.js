@@ -9,6 +9,11 @@ new Vue({
                 options: [{text:"Sim", value: "não"}],
                 isLoading: false
             },
+            modelos: {
+                selectedOption: null,
+                options: [{text:"Sim", value: "não"}],
+                isLoading: false
+            },
             bibliotecas: {
                 selectedOption: null,
                 options: [{text:"Sim", value: "não"}],
@@ -34,11 +39,20 @@ new Vue({
                 that.experimentos.options = json;
             });
         },
+        loadModelos: function() {
+            var that = this;
+            that.modelos.isLoading = true;
+
+            jQuery.getJSON('/modelos/' + that.experimentos.selectedOption.value, function(json) {
+                that.modelos.isLoading = false;
+                that.modelos.options = json;
+            });
+        },
         loadBibliotecas: function() {
             var that = this;
             that.bibliotecas.isLoading = true;
 
-            jQuery.getJSON('/bibliotecas/' + that.experimentos.selectedOption.value, function(json) {
+            jQuery.getJSON('/bibliotecas/' + that.experimentos.selectedOption.value + "/" + that.modelos.selectedOption.value , function(json) {
                 that.bibliotecas.isLoading = false;
                 that.bibliotecas.options = json;
             });
