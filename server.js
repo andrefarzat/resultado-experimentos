@@ -28,8 +28,8 @@ app.get('/experimentos', function (req, res) {
     var diretorioResultados = path.join(__dirname, "resultados");
     var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
 
-    lista.forEach(function(element) {
-        json.push({ "text": element , "value": element });
+    lista.forEach(function (element) {
+        json.push({ "text": element, "value": element });
     }, this);
 
     responseJSON(res, json);
@@ -45,8 +45,8 @@ app.get('/modelos/:experimentoId', function (req, res) {
 
     var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
 
-    lista.forEach(function(element) {
-        json.push({ "text": element , "value": element });
+    lista.forEach(function (element) {
+        json.push({ "text": element, "value": element });
     }, this);
 
     responseJSON(res, json);
@@ -64,59 +64,49 @@ app.get('/bibliotecas/:experimentoId/:modeloId', function (req, res) {
 
     var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
 
-    lista.forEach(function(element) {
-        json.push({ "text": element , "value": element });
+    lista.forEach(function (element) {
+        json.push({ "text": element, "value": element });
     }, this);
-
-    responseJSON(res, json);
 
     responseJSON(res, json);
 });
 
 app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 
-    var trace1 = {
-        y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
-        type: 'box',
-        name: 'All Points',
-        jitter: 0.3,
-        pointpos: -1.8,
-        marker: { color: 'rgb(7,40,89)' },
-        boxpoints: 'all'
-    };
+    console.log(req.params.experimentoId);
+    console.log(req.params.modeloId);
+    console.log(req.params.bibliotecaId);
 
-    var trace2 = {
-        y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
-        type: 'box',
-        name: 'Only Wiskers',
-        marker: { color: 'rgb(9,56,125)' },
-        boxpoints: false
-    };
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId, req.params.bibliotecaId);
 
-    var trace3 = {
-        y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
-        type: 'box',
-        name: 'Suspected Outlier',
-        marker: { color: 'rgb(8,81,156)', outliercolor: 'rgba(219, 64, 82, 0.6)', line: { outliercolor: 'rgba(219, 64, 82, 1.0)', outlierwidth: 2 } },
-        boxpoints: 'suspectedoutliers'
-    };
+    var heuristicas = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
 
-    var trace4 = {
-        y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
-        type: 'box',
-        name: 'Wiskers and Outliers',
-        marker: { color: 'rgb(107,174,214)' },
-        boxpoints: 'Outliers'
-    };
+    var data = [];
 
-    var rand = parseInt(Math.random() * 10, 10);
 
-    var data = [trace4, trace2, trace3, trace1];
-    if (rand < 3) {
-        data = [trace3, trace2, trace1, trace4]
-    } else if (rand < 6) {
-        data = [trace2, trace4, trace3, trace1]
-    }
+        var y1 = ['25'];
+        var trace1 = {
+            y: y1,
+            type: 'box',
+            name: 'Original'
+        };
+        data.push(trace1);
+
+
+    heuristicas.forEach(function (element) {
+        var y0 = [Math.random()+1];
+        var trace0 = {
+            y: y0,
+            type: 'box',
+            name: element
+        };
+
+        data.push(trace0);
+
+
+    }, this);
 
     responseJSON(res, data);
 });
@@ -132,7 +122,7 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 });
 
 
-app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', function(req, res) {
+app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', function (req, res) {
     // 1. Pegar os arquivos
     var leftFile = "abc def ghi";
     var rightFile = "abc def ghij";
