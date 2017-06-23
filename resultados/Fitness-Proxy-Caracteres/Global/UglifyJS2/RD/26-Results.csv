@@ -1,0 +1,4 @@
+sep=,
+trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
+26,"184449",4098,184449,"179941",4013,179941,"41327,185",true
+26,"184449",4098,184449,"178742",3993,178742,"45991,437",true

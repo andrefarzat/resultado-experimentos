@@ -1,0 +1,8 @@
+sep=,
+trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
+6,"184449",4098,184449,"180165",4023,180165,"30676,646",true
+6,"184449",4098,184449,"182703",4059,182703,"30374,284",true
+6,"184449",4098,184449,"182188",4050,182188,"30625,034",true
+6,"184449",4098,184449,"180926",4021,180926,"31493,041",true
+6,"184449",4098,184449,"182824",4072,182824,"30319,217",true
+6,"184449",4098,184449,"184426",4098,184426,"29888,304",true
