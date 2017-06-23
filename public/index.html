@@ -8,12 +8,15 @@
         <title>Detalhes do Resultado</title>
 
         <link href="css/bootstrap.min.css" rel="stylesheet" />
+        <link href="css/modal.css" rel="stylesheet" />
         <link href="https://unpkg.com/vue-multiselect@2.0.0-beta.14/dist/vue-multiselect.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.3.0/diff2html.min.css" rel="stylesheet" />
         <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/github.min.css" rel="stylesheet" />
 
         <style>
             [v-cloak] { visibility: hidden; }
+            html, body { height: 100%; }
+            #app { min-height: 100%; }
             .mylink {
                 text-decoration: none !important;
                 cursor: pointer;
@@ -22,7 +25,7 @@
 
     </head>
     <body>
-        <div id="app" v-cloak>
+        <div id="app" v-cloak @click="checkToCloseModal">
 
             <div class="container">
 
@@ -68,17 +71,42 @@
                     <tbody>
                         <tr v-for="row in table.rows">
                             <td v-for="(value, key, index) in row">
-                                <a class="mylink" @click="loadDiff(key, index)">{{ value }}</a>
+                                <a class="mylink" @click.prevent.stop="loadDiff(key, index)">{{ value }}</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div class="container" id="diff">
+            <modal v-if="showModal" @close="showModal = false">
+                <div slot="header">{{ diff.data.title }}</div>
+            </modal>
 
+            <div class="container">
+                <button @click="showModal = true">oi ?</button>
             </div>
         </div>
+
+        <!-- template for the modal component -->
+        <script type="text/x-template" id="modal-template">
+            <transition name="modal">
+                <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-container">
+
+                            <div class="modal-header">
+                                <a class="mylink pull-right" @click="$emit('close')">&times;</a>
+                                <slot name="header">default header</slot>
+                            </div>
+
+                            <div class="modal-body">
+                                <div id="diff"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </transition>
+        </script>
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>

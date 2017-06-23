@@ -149,8 +149,13 @@ app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', fun
         "index c732ee8..e49ef2d 100644",
     ].concat(diff);
 
-    // 4. Enviar
-    res.send(txt.join('\n'));
+    // 4. Enviar o json de resposta
+    var json = {
+        'title': "Título do diff",
+        'text': txt.join('\n'),
+    };
+
+    responseJSON(res, json);
 });
 
 
