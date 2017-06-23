@@ -19,30 +19,34 @@ app.get('/', function (req, res) {
     res.sendFile(index);
 });
 
-app.get('/experimentos', function(req, res) {
-    let json = [
-        {"text": "Experimento 1", "value": 1},
-        {"text": "Experimento 2", "value": 2},
-        {"text": "Experimento 3", "value": 3},
-        {"text": "Experimento 4", "value": 4},
-    ];
+app.get('/experimentos', function (req, res) {
+    let json = [];
+
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados");
+    var lista = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
+
+    lista.forEach(function(element) {
+        json.push({ "text": element , "value": element });
+    }, this);
 
     responseJSON(res, json);
 });
 
-app.get('/bibliotecas/:experimentoId', function(req, res) {
+app.get('/bibliotecas/:experimentoId', function (req, res) {
     console.log(req.params.experimentoId);
     let json = [
-        {"text": "Biblioteca 1", "value": 1},
-        {"text": "Biblioteca 2", "value": 2},
-        {"text": "Biblioteca 3", "value": 3},
-        {"text": "Biblioteca 4", "value": 4},
+        { "text": "Biblioteca 1", "value": 1 },
+        { "text": "Biblioteca 2", "value": 2 },
+        { "text": "Biblioteca 3", "value": 3 },
+        { "text": "Biblioteca 4", "value": 4 },
     ];
 
     responseJSON(res, json);
 });
 
-app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
+app.get('/graph/:experimentoId/:bibliotecaId', function (req, res) {
 
     var trace1 = {
         y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
@@ -50,7 +54,7 @@ app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
         name: 'All Points',
         jitter: 0.3,
         pointpos: -1.8,
-        marker: {color: 'rgb(7,40,89)'},
+        marker: { color: 'rgb(7,40,89)' },
         boxpoints: 'all'
     };
 
@@ -58,7 +62,7 @@ app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
         y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
         type: 'box',
         name: 'Only Wiskers',
-        marker: {color: 'rgb(9,56,125)'},
+        marker: { color: 'rgb(9,56,125)' },
         boxpoints: false
     };
 
@@ -66,7 +70,7 @@ app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
         y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
         type: 'box',
         name: 'Suspected Outlier',
-        marker: {color: 'rgb(8,81,156)', outliercolor: 'rgba(219, 64, 82, 0.6)', line: {outliercolor: 'rgba(219, 64, 82, 1.0)', outlierwidth: 2}},
+        marker: { color: 'rgb(8,81,156)', outliercolor: 'rgba(219, 64, 82, 0.6)', line: { outliercolor: 'rgba(219, 64, 82, 1.0)', outlierwidth: 2 } },
         boxpoints: 'suspectedoutliers'
     };
 
@@ -74,7 +78,7 @@ app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
         y: [0.75, 5.25, 5.5, 6, 6.2, 6.6, 6.80, 7.0, 7.2, 7.5, 7.5, 7.75, 8.15, 8.15, 8.65, 8.93, 9.2, 9.5, 10, 10.25, 11.5, 12, 16, 20.90, 22.3, 23.25],
         type: 'box',
         name: 'Wiskers and Outliers',
-        marker: {color: 'rgb(107,174,214)'},
+        marker: { color: 'rgb(107,174,214)' },
         boxpoints: 'Outliers'
     };
 
@@ -90,24 +94,24 @@ app.get('/graph/:experimentoId/:bibliotecaId', function(req, res) {
     responseJSON(res, data);
 });
 
-app.get('/table/:experimentoId/:bibliotecaId', function(req, res) {
+app.get('/table/:experimentoId/:bibliotecaId', function (req, res) {
     var data = [];
 
-    for(var i = 0; i < 30; i++) {
-        data.push({"RS": `linha ${i}`, "GA": "10", "GA2": "10", "HC": "10", "HC2": "10", "HC3": "10", "HC4": "10", "HC5": "10"});
+    for (var i = 0; i < 30; i++) {
+        data.push({ "RS": `linha ${i}`, "GA": "10", "GA2": "10", "HC": "10", "HC2": "10", "HC3": "10", "HC4": "10", "HC5": "10" });
     }
 
     responseJSON(res, data);
 });
 
 
-app.get('/diff', function(req, res) { // /:experimentoId/:bibliotecaId/:heuriticaId/:rodada
+app.get('/diff', function (req, res) { // /:experimentoId/:bibliotecaId/:heuriticaId/:rodada
 
     var prettydiff = require("./prettydiff"),
         args = {
             source: "asdf",
-            diff  : "asdd",
-            lang  : "text"
+            diff: "asdd",
+            lang: "text"
         },
         output = prettydiff(args);
 
