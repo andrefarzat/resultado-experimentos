@@ -81,32 +81,51 @@ app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
     const path = require('path');
     var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId, req.params.bibliotecaId);
 
-    var heuristicas = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
+    //var heuristicas = fs.readdirSync(diretorioResultados).filter(file => fs.lstatSync(path.join(diretorioResultados, file)).isDirectory());
+    var FileResultsBoxPlot = path.join(diretorioResultados, "Results-grouped-Boxplot.csv");
+    var textoResultadoCompleto = fs.readFileSync(FileResultsBoxPlot, 'utf8');
 
     var data = [];
 
+    if (textoResultadoCompleto.length !== 0) {
+        var linhasResultado = textoResultadoCompleto.split("\n");
+        var nome = '';
+        var y0 = [];
 
-        var y1 = ['25'];
-        var trace1 = {
-            y: y1,
-            type: 'box',
-            name: 'Original'
-        };
-        data.push(trace1);
+        for (var index = 1; index < linhasResultado.length; index++) {
+            var linha = linhasResultado[index];
+            if (linha && linha.length !== 0) {
+                //heuristic,trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
+                var dadosDoResultado = linha.split(",");
+                nome = nome == "" ? dadosDoResultado[0] : nome;
 
+                if (nome.trim() != dadosDoResultado[0].trim() && y0.length > 0) {
 
-    heuristicas.forEach(function (element) {
-        var y0 = [Math.random()+1];
-        var trace0 = {
-            y: y0,
-            type: 'box',
-            name: element
-        };
+                    data.push({
+                        y: y0,
+                        type: 'box',
+                        name: nome
+                    });
 
-        data.push(trace0);
+                    nome = dadosDoResultado[0];
+                    y0 = [];
+                }
 
+                if (dadosDoResultado[7] && dadosDoResultado[10] == "true") //se encontrou melhor
+                    y0.push(dadosDoResultado[7].replace(',', '.'));
 
-    }, this);
+            }
+        }
+
+        if (y0.length > 0) { //sobrou um
+
+            data.push({
+                y: y0,
+                type: 'box',
+                name: nome
+            });
+        }
+    }
 
     responseJSON(res, data);
 });
