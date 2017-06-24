@@ -1,0 +1,4 @@
+trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
+8,"6883",209,6883,"6341",196,6341,"55,286",true
+8,"6883",209,6883,"6742",205,6742,"48,461",true
+8,"6883",209,6883,"6378",199,6378,"54,766",true
