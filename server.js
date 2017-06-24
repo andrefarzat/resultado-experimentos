@@ -152,7 +152,7 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
             var linha = linhasResultado[index];
             if (linha.length > 0) {
                 var dadosDoResultado = linha.split(";");
-                objetoResultado[dadosDoResultado[1]] = dadosDoResultado[6].replace(',', '.') ;
+                objetoResultado[dadosDoResultado[1]] = [dadosDoResultado[6].replace(',', '.'), dadosDoResultado[2]];
             }
         }
     }
@@ -163,9 +163,26 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 
 
 app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', function (req, res) {
+
+    console.log(req.params.experimentoId);
+    console.log(req.params.modeloId);
+    console.log(req.params.bibliotecaId);
+    console.log(req.params.heuriticaId);
+    console.log(req.params.rodada);
+
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId, req.params.bibliotecaId, req.params.heuriticaId);
+    
+    var arquivoOriginal = path.join(diretorioResultados, "original.js");
+    var arquivoRodada = path.join(diretorioResultados, req.params.rodada + ".js");
+    
+    var codigoOriginal = fs.readFileSync(arquivoOriginal, 'utf8');
+    var codigoRodada = fs.readFileSync(arquivoRodada, 'utf8');
+
     // 1. Pegar os arquivos
-    var leftFile = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
-    var rightFile = "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).";
+    var leftFile = codigoOriginal;
+    var rightFile = codigoRodada;
 
     // 2. Fazer o diff entre eles
     var diff = difflib.unifiedDiff(leftFile.split('\n'), rightFile.split('\n'), {
@@ -181,7 +198,7 @@ app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', fun
 
     // 4. Enviar o json de resposta
     var json = {
-        'title': "Título do diff",
+        'title': "Diff",
         'text': txt.join('\n'),
     };
 
