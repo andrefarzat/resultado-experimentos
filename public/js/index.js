@@ -3,7 +3,7 @@ Vue.component('multiselect', VueMultiselect.Multiselect);
 Vue.component('modal', {template: '#modal-template'});
 Vue.filter('percent', function(numero){ return parseFloat(numero * 100).toFixed(2); });
 
-new Vue({
+window.v = new Vue({
     el: '#app',
     data: function() {
         return {
@@ -24,10 +24,12 @@ new Vue({
                 isLoading: false
             },
             graph: {
+                isValid: false,
                 isLoading: false,
                 data: []
             },
             table: {
+                isValid: false,
                 isLoading: false,
                 headers: [],
                 rows: []
@@ -51,6 +53,13 @@ new Vue({
         loadModelos: function() {
             var that = this;
             that.modelos.isLoading = true;
+            // resetting
+            that.modelos.options = [];
+            that.modelos.selectedOption = that.modelos.options[0];
+            that.bibliotecas.options = [];
+            that.bibliotecas.selectedOption = that.bibliotecas.options[0];
+            that.graph.isValid = false;
+            that.table.isValid = false;
 
             jQuery.getJSON('/modelos/' + that.experimentos.selectedOption.value, function(json) {
                 that.modelos.isLoading = false;
@@ -59,7 +68,12 @@ new Vue({
         },
         loadBibliotecas: function() {
             var that = this;
+            // resetting
             that.bibliotecas.isLoading = true;
+            that.bibliotecas.options = [];
+            that.bibliotecas.selectedOption = that.bibliotecas.options[0];
+            that.graph.isValid = false;
+            that.table.isValid = false;
 
             var url = '/bibliotecas/'
                 + that.experimentos.selectedOption.value + '/'
@@ -80,9 +94,12 @@ new Vue({
                 + that.bibliotecas.selectedOption.value;
 
             jQuery.getJSON(url, function(json) {
+                that.graph.isValid = true;
                 that.graph.isLoading = false;
                 that.graph.data = json;
-                Plotly.newPlot('plotly', json);
+                setTimeout(function(){
+                    Plotly.newPlot('plotly', json);
+                }, 100);
             });
         },
         loadTable: function() {
@@ -95,6 +112,7 @@ new Vue({
                 + that.bibliotecas.selectedOption.value;
 
             jQuery.getJSON(url, function(json) {
+                that.table.isValid = true;
                 that.table.isLoading = false;
                 that.table.headers = Object.keys(json[0]);
                 that.table.rows = json;

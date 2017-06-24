@@ -9,9 +9,9 @@
 
         <link href="css/bootstrap.min.css" rel="stylesheet" />
         <link href="css/modal.css" rel="stylesheet" />
-        <link href="https://unpkg.com/vue-multiselect@2.0.0-beta.14/dist/vue-multiselect.min.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.3.0/diff2html.min.css" rel="stylesheet" />
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/github.min.css" rel="stylesheet" />
+        <link href="css/vue-multiselect.min.css" rel="stylesheet" />
+        <link href="css/diff2html.min.css" rel="stylesheet" />
+        <link href="css/highlightjs.min.css" rel="stylesheet" />
 
         <style>
             [v-cloak] { visibility: hidden; }
@@ -35,33 +35,33 @@
                     <div class="form-group">
                         <label class="col-sm-2 control-label">Fitness</label>
                         <div class="col-sm-10">
-                            <multiselect v-model="experimentos.selectedOption" :options="experimentos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="experimentos.isLoading" placeholder="Selecione o experimento" :hide-selected="true" @input="loadModelos"></multiselect>
+                            <multiselect v-model="experimentos.selectedOption" :options="experimentos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="experimentos.isLoading" placeholder="Selecione o experimento" :hide-selected="false" @input="loadModelos"></multiselect>
                         </div>
                     </div>
 
                     <div class="form-group" v-if="experimentos.selectedOption">
                         <label class="col-sm-2 control-label">Ranking</label>
                         <div class="col-sm-10">
-                            <multiselect v-model="modelos.selectedOption" :options="modelos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="modelos.isLoading" placeholder="Selecione o modelo" :hide-selected="true" @input="loadBibliotecas"></multiselect>
+                            <multiselect v-model="modelos.selectedOption" :options="modelos.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="modelos.isLoading" placeholder="Selecione o modelo" :hide-selected="false" @input="loadBibliotecas"></multiselect>
                         </div>
                     </div>
 
                     <div class="form-group" v-if="modelos.selectedOption">
                         <label class="col-sm-2 control-label">Biblioteca</label>
                         <div class="col-sm-10">
-                            <multiselect v-model="bibliotecas.selectedOption" :options="bibliotecas.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="bibliotecas.isLoading" placeholder="Selecione a biblioteca" :hide-selected="true" @input="loadGraph(); loadTable()"></multiselect>
+                            <multiselect v-model="bibliotecas.selectedOption" :options="bibliotecas.options" :searchable="false" :allow-empty="false" track-by="value" label="text" :is-loading="bibliotecas.isLoading" placeholder="Selecione a biblioteca" :hide-selected="false" @input="loadGraph(); loadTable()"></multiselect>
                         </div>
                     </div>
                 </form>
 
             </div>
 
-            <div class="container">
+            <div class="container" v-if="graph.isValid">
                 <!-- examples: https://plot.ly/javascript/box-plots/ -->
                 <div id="plotly"></div>
             </div>
 
-            <div class="container">
+            <div class="container" v-if="table.isValid">
                 <table class="table table-striped table-hover">
                     <thead>
                         <tr>
@@ -94,17 +94,17 @@
         </div>
 
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
-        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        <script src="vendor/jquery.min.js"></script>
+        <script src="vendor/bootstrap.min.js"></script>
+        <script src="vendor/plotly-latest.min.js"></script>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.3.0/diff2html.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/diff2html/2.3.0/diff2html-ui.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/languages/scala.min.js"></script>
+        <script src="vendor/diff2html.min.js"></script>
+        <script src="vendor/diff2html-ui.min.js"></script>
+        <script src="vendor/highlight.min.js"></script>
+        <script src="vendor/scala.min.js"></script>
 
-        <script src="https://unpkg.com/vue"></script>
-        <script src="https://unpkg.com/vue-multiselect@2.0.0-beta.14"></script>
+        <script src="vendor/vue.js"></script>
+        <script src="vendor/vue-multiselect.js"></script>
 
         <script src="js/index.js"></script>
     </body>
