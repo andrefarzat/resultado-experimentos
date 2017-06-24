@@ -131,11 +131,32 @@ app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 });
 
 app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
-    var data = [];
 
-    for (var i = 0; i < 30; i++) {
-        data.push({ "RS": `linha ${i}`, "GA": "10", "GA2": "10", "HC": "10", "HC2": "10", "HC3": "10", "HC4": "10", "HC5": "10" });
+    console.log(req.params.experimentoId);
+    console.log(req.params.modeloId);
+    console.log(req.params.bibliotecaId);
+
+    const fs = require('fs');
+    const path = require('path');
+    var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId, req.params.bibliotecaId);
+
+    //Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+    var FileAnaliseTempoExecucao = path.join(diretorioResultados, "analiseTempoExecucao.csv");
+    var textoResultadoCompleto = fs.readFileSync(FileAnaliseTempoExecucao, 'utf8');
+    var data = [];
+    var objetoResultado = {};
+
+    if (textoResultadoCompleto.length !== 0) {
+        var linhasResultado = textoResultadoCompleto.split("\n");
+        for (var index = 2; index < linhasResultado.length; index++) {
+            var linha = linhasResultado[index];
+            if (linha.length > 0) {
+                var dadosDoResultado = linha.split(";");
+                objetoResultado[dadosDoResultado[1]] = dadosDoResultado[6].replace(',', '.') ;
+            }
+        }
     }
+    data.push(objetoResultado);
 
     responseJSON(res, data);
 });

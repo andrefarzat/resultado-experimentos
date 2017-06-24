@@ -71,7 +71,7 @@
                     <tbody>
                         <tr v-for="row in table.rows">
                             <td v-for="(value, key, index) in row">
-                                <a class="mylink" @click.prevent.stop="loadDiff(key, index)">{{ value }}</a>
+                                <a class="mylink" @click.prevent.stop="loadDiff(key, index)">{{ value | percent }}</a>
                             </td>
                         </tr>
                     </tbody>

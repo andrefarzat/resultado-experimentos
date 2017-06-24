@@ -1,6 +1,7 @@
 Vue.component('multiselect', VueMultiselect.Multiselect);
 
 Vue.component('modal', {template: '#modal-template'});
+Vue.filter('percent', function(numero){ return parseFloat(numero * 100).toFixed(2); });
 
 new Vue({
     el: '#app',
