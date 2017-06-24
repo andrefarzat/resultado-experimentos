@@ -152,7 +152,9 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
             var linha = linhasResultado[index];
             if (linha.length > 0) {
                 var dadosDoResultado = linha.split(";");
-                objetoResultado[dadosDoResultado[1]] = [dadosDoResultado[6].replace(',', '.'), dadosDoResultado[2]];
+                var valor = parseFloat(dadosDoResultado[6].replace(',', '.'));
+                if (!isNaN(valor) || valor > 0)
+                    objetoResultado[dadosDoResultado[1]] = [dadosDoResultado[6].replace(',', '.'), dadosDoResultado[2]];
             }
         }
     }
@@ -173,10 +175,10 @@ app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', fun
     const fs = require('fs');
     const path = require('path');
     var diretorioResultados = path.join(__dirname, "resultados", req.params.experimentoId, req.params.modeloId, req.params.bibliotecaId, req.params.heuriticaId);
-    
+
     var arquivoOriginal = path.join(diretorioResultados, "original.js");
     var arquivoRodada = path.join(diretorioResultados, req.params.rodada + ".js");
-    
+
     var codigoOriginal = fs.readFileSync(arquivoOriginal, 'utf8');
     var codigoRodada = fs.readFileSync(arquivoRodada, 'utf8');
 
