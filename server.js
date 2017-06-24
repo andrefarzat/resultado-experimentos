@@ -153,8 +153,9 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
             if (linha.length > 0) {
                 var dadosDoResultado = linha.split(";");
                 var valor = parseFloat(dadosDoResultado[6].replace(',', '.'));
-                if (!isNaN(valor) || valor > 0)
-                    objetoResultado[dadosDoResultado[1]] = [dadosDoResultado[6].replace(',', '.'), dadosDoResultado[2]];
+                
+                if (!isNaN(valor) && valor > 0)
+                    objetoResultado[dadosDoResultado[1]] = [valor, dadosDoResultado[2]];
             }
         }
     }
