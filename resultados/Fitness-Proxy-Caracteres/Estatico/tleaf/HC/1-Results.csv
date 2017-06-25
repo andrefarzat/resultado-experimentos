@@ -1,5 +1,0 @@
-sep=,
-trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
-1,"3686",133,3686,"3255",122,3255,"46,09",true
-1,"3686",133,3686,"3269",122,3269,"34,07",true
-1,"3686",133,3686,"3269",122,3269,"24,088",true
