@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+node-browserify;Original;-;1;0;13120;0;12487;0;0
+node-browserify;RD;26;1;0;11305;0.13833841463414634;10724;0.14118683430767998;NaN
+node-browserify;GA;N/A;1;0;13120;0;12487;0;0
+node-browserify;GA2;N/A;1;0;13120;0;12487;0;0
+node-browserify;HC;N/A;1;0;13120;0;12487;0;0
+node-browserify;HC2;N/A;1;0;13120;0;12487;0;0
+node-browserify;HC3;0;1;0;12792;0.025;12099;0.03107231520781613;NaN
+node-browserify;HC4;N/A;1;0;13120;0;12487;0;0
+node-browserify;HC5;N/A;1;0;13120;0;12487;0;0
+node-browserify;HC52;N/A;1;0;13120;0;12487;0;0

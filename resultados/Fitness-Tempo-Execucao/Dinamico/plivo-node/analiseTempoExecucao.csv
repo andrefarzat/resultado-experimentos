@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+plivo-node;Original;-;1;0;12318;0;9604;0;0
+plivo-node;RD;3;1;0;12131;0.01518103588244845;9464;0.014577259475218658;NaN
+plivo-node;GA;N/A;1;0;12318;0;9604;0;0
+plivo-node;GA2;N/A;1;0;12318;0;9604;0;0
+plivo-node;HC;0;1;0;12152;0.013476213671050495;9491;0.011765930862140775;NaN
+plivo-node;HC2;N/A;1;0;12318;0;9604;0;0
+plivo-node;HC3;N/A;1;0;12318;0;9604;0;0
+plivo-node;HC4;N/A;1;0;12318;0;9604;0;0
+plivo-node;HC5;N/A;1;0;12318;0;9604;0;0
+plivo-node;HC52;N/A;1;0;12318;0;9604;0;0
