@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+gulp-cccr;Original;-;1;0;10927;0;5257;0;0
+gulp-cccr;RD;1;1;0;3034;0.7223391598791983;2139;0.593113943313677;0
+gulp-cccr;GA;12;1;0;3059;0.7200512491992312;2163;0.5885486018641811;0
+gulp-cccr;GA2;N/A;1;0;10927;0;5257;0;0
+gulp-cccr;HC;23;1;0;10828;0.009060126292669534;5133;0.023587597489062202;0
+gulp-cccr;HC2;N/A;1;0;10927;0;5257;0;0
+gulp-cccr;HC3;N/A;1;0;10927;0;5257;0;0
+gulp-cccr;HC4;N/A;1;0;10927;0;5257;0;0
+gulp-cccr;HC5;N/A;1;0;10927;0;5257;0;0
+gulp-cccr;HC52;N/A;1;0;10927;0;5257;0;0
