@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+esprima;Original;-;1;0;138070;0;100514;0;0
+esprima;RD;2;1;0;137406;0.004809154776562613;99912;0.005989215432676045;NaN
+esprima;GA;N/A;1;0;138070;0;100514;0;0
+esprima;GA2;N/A;1;0;138070;0;100514;0;0
+esprima;HC;N/A;1;0;138070;0;100514;0;0
+esprima;HC2;N/A;1;0;138070;0;100514;0;0
+esprima;HC3;N/A;1;0;138070;0;100514;0;0
+esprima;HC4;N/A;1;0;138070;0;100514;0;0
+esprima;HC5;N/A;1;0;138070;0;100514;0;0
+esprima;HC52;N/A;1;0;138070;0;100514;0;0

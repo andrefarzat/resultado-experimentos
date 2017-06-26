@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+jquery;Original;-;1;0;86956;0;96929;0;0
+jquery;RD;3;1;0;65115;0.25117300703804224;71101;0.2664630812244014;NaN
+jquery;GA;N/A;1;0;86956;0;96929;0;0
+jquery;GA2;N/A;1;0;86956;0;96929;0;0
+jquery;HC;N/A;1;0;86956;0;96929;0;0
+jquery;HC2;N/A;1;0;86956;0;96929;0;0
+jquery;HC3;N/A;1;0;86956;0;96929;0;0
+jquery;HC4;N/A;1;0;86956;0;96929;0;0
+jquery;HC5;N/A;1;0;86956;0;96929;0;0
+jquery;HC52;N/A;1;0;86956;0;96929;0;0

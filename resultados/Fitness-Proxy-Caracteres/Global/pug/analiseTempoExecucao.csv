@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+pug;Original;-;1;0;4800;0;4173;0;0
+pug;RD;22;1;0;3113;0.3514583333333333;2748;0.34148094895758446;NaN
+pug;GA;N/A;1;0;4800;0;4173;0;0
+pug;GA2;N/A;1;0;4800;0;4173;0;0
+pug;HC;N/A;1;0;4800;0;4173;0;0
+pug;HC2;N/A;1;0;4800;0;4173;0;0
+pug;HC3;0;1;0;2909;0.39395833333333335;2560;0.38653247064462015;NaN
+pug;HC4;N/A;1;0;4800;0;4173;0;0
+pug;HC5;N/A;1;0;4800;0;4173;0;0
+pug;HC52;N/A;1;0;4800;0;4173;0;0

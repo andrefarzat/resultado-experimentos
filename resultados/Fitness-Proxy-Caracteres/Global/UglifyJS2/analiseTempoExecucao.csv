@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+UglifyJS2;Original;-;1;0;71864;0;64370;0;0
+UglifyJS2;RD;18;1;0;69152;0.037737949460091284;61962;0.03740873077520584;NaN
+UglifyJS2;GA;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;GA2;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC2;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC3;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC4;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC5;N/A;1;0;71864;0;64370;0;0
+UglifyJS2;HC52;N/A;1;0;71864;0;64370;0;0
