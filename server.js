@@ -239,7 +239,7 @@ app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', fun
 
     // 4. Enviar o json de resposta
     var json = {
-        'title': req.params.heuriticaId + " rodada" + req.params.rodada,
+        'title': req.params.heuriticaId + " rodada " + req.params.rodada,
         'text': txt.join('\n'),
     };
 

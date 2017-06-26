@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+xml2js;Original;-;1;0;8301;0;8499;0;0
+xml2js;RD;10;1;0;8241;0.007228044813877846;8422;0.009059889398752794;0
+xml2js;GA;22;1;0;8292;0.0010842067220816769;8482;0.002000235321802565;0
+xml2js;GA2;N/A;1;0;8301;0;8499;0;0
+xml2js;HC;N/A;1;0;8301;0;8499;0;0
+xml2js;HC2;N/A;1;0;8301;0;8499;0;0
+xml2js;HC3;N/A;1;0;8301;0;8499;0;0
+xml2js;HC4;N/A;1;0;8301;0;8499;0;0
+xml2js;HC5;N/A;1;0;8301;0;8499;0;0
+xml2js;HC52;N/A;1;0;8301;0;8499;0;0

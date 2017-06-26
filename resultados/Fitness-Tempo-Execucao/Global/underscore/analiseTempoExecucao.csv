@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+underscore;Original;-;1;0;16161;0;19481;0;0
+underscore;RD;27;1;0;16001;0.009900377451890353;19319;0.008315794877059699;0
+underscore;GA;9;1;0;15898;0.01627374543654477;19191;0.014886299471279708;0
+underscore;GA2;N/A;1;0;16161;0;19481;0;0
+underscore;HC;N/A;1;0;16161;0;19481;0;0
+underscore;HC2;N/A;1;0;16161;0;19481;0;0
+underscore;HC3;N/A;1;0;16161;0;19481;0;0
+underscore;HC4;N/A;1;0;16161;0;19481;0;0
+underscore;HC5;N/A;1;0;16161;0;19481;0;0
+underscore;HC52;N/A;1;0;16161;0;19481;0;0
