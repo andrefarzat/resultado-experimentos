@@ -1,2 +1,3 @@
+sep=,
 trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
-2,"406834",10795,406834,"393916",10541,393916,"154001,565",true
+4,"13073",400,13073,"9200",304,9200,"15225,847",true
