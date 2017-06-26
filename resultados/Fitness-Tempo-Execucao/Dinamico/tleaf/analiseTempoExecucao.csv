@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+tleaf;Original;-;1;0;1722;0;1563;0;0
+tleaf;RD;8;1;0;1564;0.09175377468060394;1391;0.11004478566858605;NaN
+tleaf;GA;N/A;1;0;1722;0;1563;0;0
+tleaf;GA2;N/A;1;0;1722;0;1563;0;0
+tleaf;HC;2;1;0;1568;0.08943089430894309;1389;0.11132437619961612;NaN
+tleaf;HC2;N/A;1;0;1722;0;1563;0;0
+tleaf;HC3;N/A;1;0;1722;0;1563;0;0
+tleaf;HC4;N/A;1;0;1722;0;1563;0;0
+tleaf;HC5;N/A;1;0;1722;0;1563;0;0
+tleaf;HC52;N/A;1;0;1722;0;1563;0;0

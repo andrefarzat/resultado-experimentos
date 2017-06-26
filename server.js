@@ -73,6 +73,7 @@ app.get('/bibliotecas/:experimentoId/:modeloId', function (req, res) {
 
 app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
 
+    var resultado = {};
     console.log(req.params.experimentoId);
     console.log(req.params.modeloId);
     console.log(req.params.bibliotecaId);
@@ -86,20 +87,32 @@ app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
     var textoResultadoCompleto = fs.readFileSync(FileResultsBoxPlot, 'utf8');
 
     var data = [];
+    var FileAnaliseTempoExecucao = path.join(diretorioResultados, "analiseTempoExecucao.csv");
+    var textoResultado = fs.readFileSync(FileAnaliseTempoExecucao, 'utf8');
+    var linhas = textoResultado.split("\n");
+    var arrValores = linhas[1].split(";");
+    var originalCodeChars = parseFloat(arrValores[5].replace(',', '.'));
+
+    data.push({
+        y: [originalCodeChars],
+        type: 'box',
+        name: 'Original'
+    });
+
 
     if (textoResultadoCompleto.length !== 0) {
         var linhasResultado = textoResultadoCompleto.split("\n");
         var nome = '';
         var y0 = [];
 
-        for (var index = 1; index < linhasResultado.length; index++) {
+        for (var index = 2; index < linhasResultado.length; index++) {
             var linha = linhasResultado[index];
             if (linha && linha.length !== 0) {
                 //heuristic,trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
-                var dadosDoResultado = linha.split(",");
-                nome = nome == "" ? dadosDoResultado[0] : nome;
+                var dadosDoResultado = linha.split(";");
+                nome = nome == "" ? dadosDoResultado[1].trim() : nome;
 
-                if (nome.trim() != dadosDoResultado[0].trim() && y0.length > 0) {
+                if (nome.trim() != dadosDoResultado[1].trim()) {
 
                     data.push({
                         y: y0,
@@ -107,12 +120,13 @@ app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
                         name: nome
                     });
 
-                    nome = dadosDoResultado[0];
+                    nome = dadosDoResultado[1].trim();
                     y0 = [];
                 }
 
-                if (dadosDoResultado[7] && dadosDoResultado[10] == "true") //se encontrou melhor
-                    y0.push(dadosDoResultado[7].replace(',', '.'));
+                var valor = parseFloat(dadosDoResultado[5].replace(',', '.'));
+                if (!isNaN(valor) && valor < originalCodeChars)
+                    y0.push(valor);
 
             }
         }
@@ -127,7 +141,31 @@ app.get('/graph/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
         }
     }
 
-    responseJSON(res, data);
+
+
+    resultado['data'] = data;
+    resultado['layout'] = {
+        title: req.params.bibliotecaId,
+        shapes: [
+            {
+                type: 'line',
+                x0: 0,
+                y0: originalCodeChars,
+                x1: originalCodeChars,
+                y1: originalCodeChars,
+                name: 'Original Code',
+                xref: 'paper',
+                line: {
+                    color: 'rgb(50, 171, 96)',
+                    width: 2,
+                    dash: 'solid',
+                    name: 'line'
+                }
+            }
+        ]
+    };
+
+    responseJSON(res, resultado);
 });
 
 app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
@@ -153,7 +191,7 @@ app.get('/table/:experimentoId/:modeloId/:bibliotecaId', function (req, res) {
             if (linha.length > 0) {
                 var dadosDoResultado = linha.split(";");
                 var valor = parseFloat(dadosDoResultado[6].replace(',', '.'));
-                
+
                 if (!isNaN(valor) && valor > 0)
                     objetoResultado[dadosDoResultado[1]] = [valor, dadosDoResultado[2]];
             }
@@ -201,7 +239,7 @@ app.get('/diff/:experimentoId/:modeloId/:bibliotecaId/:heuriticaId/:rodada', fun
 
     // 4. Enviar o json de resposta
     var json = {
-        'title': "Diff",
+        'title': req.params.heuriticaId + " rodada" + req.params.rodada,
         'text': txt.join('\n'),
     };
 

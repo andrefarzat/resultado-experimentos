@@ -26,7 +26,8 @@ window.v = new Vue({
             graph: {
                 isValid: false,
                 isLoading: false,
-                data: []
+                data: [],
+                layout: []
             },
             table: {
                 isValid: false,
@@ -96,9 +97,11 @@ window.v = new Vue({
             jQuery.getJSON(url, function(json) {
                 that.graph.isValid = true;
                 that.graph.isLoading = false;
-                that.graph.data = json;
+                that.graph.data = json.data;
+                that.graph.layout = json.layout
+
                 setTimeout(function(){
-                    Plotly.newPlot('plotly', json);
+                    Plotly.newPlot('plotly', json.data, json.layout);
                 }, 100);
             });
         },

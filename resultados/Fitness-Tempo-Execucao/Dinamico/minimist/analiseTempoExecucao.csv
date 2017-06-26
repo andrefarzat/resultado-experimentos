@@ -1,0 +1,11 @@
+Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
+minimist;Original;-;1;0;2911;0;3785;0;0
+minimist;RD;5;1;0;2883;0.009618687736173137;3743;0.011096433289299868;NaN
+minimist;GA;N/A;1;0;2911;0;3785;0;0
+minimist;GA2;N/A;1;0;2911;0;3785;0;0
+minimist;HC;N/A;1;0;2911;0;3785;0;0
+minimist;HC2;N/A;1;0;2911;0;3785;0;0
+minimist;HC3;N/A;1;0;2911;0;3785;0;0
+minimist;HC4;N/A;1;0;2911;0;3785;0;0
+minimist;HC5;N/A;1;0;2911;0;3785;0;0
+minimist;HC52;N/A;1;0;2911;0;3785;0;0
