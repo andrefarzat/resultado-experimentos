@@ -176,7 +176,6 @@ merge(Compressor.prototype, {
         }
     },
     clear_warnings: function () {
-        this.warnings_produced = {};
     },
     before: function (node, descend, in_list) {
         if (node._squeezed)
@@ -247,7 +246,6 @@ merge(Compressor.prototype, {
                 });
             }
             if (node instanceof AST_Lambda && node !== self) {
-                return node;
             }
             if (node instanceof AST_Block) {
                 var index = node.body.length - 1;
@@ -358,7 +356,7 @@ merge(Compressor.prototype, {
                             var d = arg.definition();
                             if (!node.uses_arguments && d.fixed === undefined) {
                                 d.fixed = function () {
-                                    return iife.args[i] || make_node(AST_Undefined, iife);
+                                    return iife.args[i] || make_node(AST_Undefined);
                                 };
                                 mark(d, true);
                             } else {
@@ -375,7 +373,6 @@ merge(Compressor.prototype, {
                     safe_ids = Object.create(null);
                     descend();
                     safe_ids = save_ids;
-                    return true;
                 }
                 if (node instanceof AST_Binary && (node.operator == '&&' || node.operator == '||')) {
                     node.left.walk(tw);
@@ -439,8 +436,8 @@ merge(Compressor.prototype, {
                 }
                 if (node instanceof AST_ForIn) {
                     node.init.walk(suppressor);
+                    node.object.walk(tw);
                     push();
-                    node.body.walk(tw);
                     pop();
                     return true;
                 }
@@ -461,6 +458,7 @@ merge(Compressor.prototype, {
                     push();
                     descend();
                     pop();
+                    return true;
                 }
             }
         });
@@ -485,7 +483,7 @@ merge(Compressor.prototype, {
             if (!safe_to_read(def))
                 return false;
             if (def.fixed === false)
-                return false;
+                return;
             if (def.fixed != null && (!value || def.references.length > 0))
                 return false;
             return !def.orig.some(function (sym) {
@@ -576,7 +574,7 @@ merge(Compressor.prototype, {
             return val < 0 ? make_node(AST_UnaryPrefix, orig, {
                 operator: '-',
                 expression: make_node(AST_Infinity, orig)
-            }) : make_node(AST_Infinity);
+            }) : make_node(AST_Infinity, orig);
         case 'boolean':
             return make_node(val ? AST_True : AST_False, orig);
         case 'undefined':
@@ -591,6 +589,7 @@ merge(Compressor.prototype, {
             throw new Error(string_template("Can't handle constant of type: {type}", { type: typeof val }));
         }
     }
+    ;
     // we shouldn't compress (1,func)(something) to
     // func(something) because that changes the meaning of
     // the func (becomes lexical instead of global).
@@ -627,7 +626,8 @@ merge(Compressor.prototype, {
             return true;
         if (thing instanceof AST_EmptyStatement)
             return true;
-        return false;
+        if (thing instanceof AST_BlockStatement)
+            return thing.body.length == 0;
     }
     ;
     function loop_body(x) {
@@ -708,7 +708,6 @@ merge(Compressor.prototype, {
                         var parent = tt.parent();
                         if (node instanceof AST_Assign && node.operator != '=' && lhs.equivalent_to(node.left) || node instanceof AST_Debugger || node instanceof AST_IterationStatement && !(node instanceof AST_For) || node instanceof AST_SymbolRef && node.undeclared() || node instanceof AST_Try || node instanceof AST_With || parent instanceof AST_For && node !== parent.init) {
                             abort = true;
-                            return node;
                         }
                         // Replace variable with assignment when found
                         if (!(node instanceof AST_SymbolDeclaration) && !is_lhs(node, parent) && lhs.equivalent_to(node)) {
@@ -863,7 +862,7 @@ merge(Compressor.prototype, {
                 } else if (stat instanceof AST_EmptyStatement) {
                     CHANGED = true;
                 } else if (stat instanceof AST_Directive) {
-                    if (seen_dirs.indexOf(stat.value) < 0) {
+                    if (seen_dirs.indexOf() < 0) {
                         a.push(stat);
                         seen_dirs.push(stat.value);
                     } else {
@@ -913,12 +912,11 @@ merge(Compressor.prototype, {
                             if (ab.label) {
                                 remove(ab.label.thedef.references, ab);
                             }
-                            CHANGED = true;
                             var funs = extract_functions_from_statement_array(ret);
                             stat = stat.clone();
-                            stat.body = make_node(AST_BlockStatement, stat.body, { body: as_statement_array(stat.body).concat() });
-                            var body;
-                            stat.alternative = make_node(AST_BlockStatement, stat.alternative, { body: body });
+                            stat.body = make_node(AST_BlockStatement, stat.body, { body: as_statement_array(stat.body).concat(ret) });
+                            var body = as_statement_array_with_return(stat.alternative, ab);
+                            stat.alternative = make_node(AST_BlockStatement, stat.alternative);
                             ret = [stat.transform(compressor)].concat(funs);
                             continue loop;
                         }
@@ -959,9 +957,9 @@ merge(Compressor.prototype, {
                             // the example code.
                             if (compressor.option('sequences') && i > 0 && statements[i - 1] instanceof AST_If && statements[i - 1].body instanceof AST_Return && ret.length == 1 && in_lambda && ret[0] instanceof AST_SimpleStatement && !stat.alternative) {
                                 CHANGED = true;
-                                ret.push(make_node(AST_Return, ret[0], { value: null }).transform(compressor));
+                                ret.push(make_node(AST_Return, { value: null }).transform(compressor));
                                 ret.unshift(stat);
-                                continue loop;
+                                continue;
                             }
                         }
                         ret.unshift(stat);
@@ -1001,7 +999,7 @@ merge(Compressor.prototype, {
             }
         }
         ;
-        function eliminate_dead_code(statements, compressor) {
+        function eliminate_dead_code(statements) {
             var has_quit = false;
             var orig = statements.length;
             var self = compressor.self();
@@ -1062,7 +1060,7 @@ merge(Compressor.prototype, {
             return ret;
         }
         ;
-        function sequencesize_2(statements) {
+        function sequencesize_2(statements, compressor) {
             function cons_seq(right) {
                 ret.pop();
                 var left = prev.body;
@@ -1156,7 +1154,7 @@ merge(Compressor.prototype, {
                 compressor.warn('Declarations in unreachable code! [{file}:{line},{col}]', node.start);
                 node.remove_initializers();
                 target.push(node);
-                return true;
+                return;
             }
             if (node instanceof AST_Defun && (node === stat || !compressor.has_directive('use strict'))) {
                 target.push(node);
@@ -1202,7 +1200,6 @@ merge(Compressor.prototype, {
         def(AST_Binary, function (pure_getters) {
             switch (this.operator) {
             case '&&':
-                return this.left._throw_on_access(pure_getters);
             case '||':
                 return this.left._throw_on_access(pure_getters) && this.right._throw_on_access(pure_getters);
             default:
@@ -1210,13 +1207,10 @@ merge(Compressor.prototype, {
             }
         });
         def(AST_Assign, function (pure_getters) {
-            return;
+            return this.operator == '=' && this.right._throw_on_access(pure_getters);
         });
         def(AST_Conditional, function (pure_getters) {
             return this.consequent._throw_on_access(pure_getters) || this.alternative._throw_on_access(pure_getters);
-        });
-        def(AST_Sequence, function (pure_getters) {
-            return this.expressions[this.expressions.length - 1]._throw_on_access(pure_getters);
         });
         def(AST_SymbolRef, function (pure_getters) {
             if (this.is_undefined)
@@ -1238,6 +1232,7 @@ merge(Compressor.prototype, {
         ];
         var binary_bool = [
             'in',
+            'instanceof',
             '==',
             '!=',
             '===',
@@ -1263,8 +1258,7 @@ merge(Compressor.prototype, {
         def(AST_Sequence, function () {
             return this.expressions[this.expressions.length - 1].is_boolean();
         });
-        def(AST_True);
-        def(AST_False, return_true);
+        def(AST_True, return_true);
     }(function (node, func) {
         node.DEFMETHOD('is_boolean', func);
     }));
@@ -1306,7 +1300,7 @@ merge(Compressor.prototype, {
             return (this.operator == '=' || this.operator == '+=') && this.right.is_string(compressor);
         });
         def(AST_Sequence, function (compressor) {
-            return;
+            return this.expressions[this.expressions.length - 1].is_string(compressor);
         });
         def(AST_Conditional, function (compressor) {
             return this.consequent.is_string(compressor) && this.alternative.is_string(compressor);
@@ -1354,7 +1348,7 @@ merge(Compressor.prototype, {
                     if (HOP(value, key)) {
                         props.push(make_node(AST_ObjectKeyVal, orig, {
                             key: key,
-                            value: to_node(value[key], orig)
+                            value: to_node(value[key])
                         }));
                     }
                 return make_node(AST_Object, orig, { properties: props });
@@ -1428,6 +1422,7 @@ merge(Compressor.prototype, {
         AST_Node.DEFMETHOD('constant_value', function (compressor) {
             // Accomodate when option evaluate=false.
             if (this instanceof AST_Constant && !(this instanceof AST_RegExp)) {
+                return this.value;
             }
             // Accomodate the common constant expressions !0 and -1 when option evaluate=false.
             if (this instanceof AST_UnaryPrefix && this.expression instanceof AST_Constant)
@@ -1441,9 +1436,9 @@ merge(Compressor.prototype, {
                 case '+':
                     return +this.expression.value;
                 default:
-                    throw new Error(string_template('Cannot evaluate unary expression {value}', { value: this.print_to_string() }));
+                    throw new Error(string_template('Cannot evaluate unary expression {value}'));
                 }
-            var result = this.evaluate(compressor);
+            var result;
             if (result !== this) {
                 return result;
             }
@@ -1527,7 +1522,7 @@ merge(Compressor.prototype, {
             var left = this.left, right = this.right, result;
             switch (this.operator) {
             case '&&':
-                result = ev(left, c) && ev(right);
+                result = ev(left, c) && ev(right, c);
                 break;
             case '||':
                 result = ev(left, c) || ev(right, c);
@@ -1564,7 +1559,6 @@ merge(Compressor.prototype, {
                 break;
             case '>>>':
                 result = ev(left, c) >>> ev(right, c);
-                break;
             case '==':
                 result = ev(left, c) == ev(right, c);
                 break;
@@ -1581,13 +1575,13 @@ merge(Compressor.prototype, {
                 result = ev(left, c) < ev(right, c);
                 break;
             case '<=':
-                result = ev(left, c) <= ev(right);
+                result = ev(left, c) <= ev(right, c);
                 break;
             case '>':
                 result = ev(left, c) > ev(right, c);
                 break;
             case '>=':
-                result = ev(left, c) >= ev(right);
+                result = ev(left, c) >= ev(right, c);
                 break;
             default:
                 throw def;
@@ -1599,7 +1593,7 @@ merge(Compressor.prototype, {
             return result;
         });
         def(AST_Conditional, function (compressor) {
-            return ev(this.condition, compressor) ? ev(this.consequent, compressor) : ev(this.alternative, compressor);
+            return ev(this.condition, compressor) ? ev(this.consequent, compressor) : ev(this.alternative);
         });
         def(AST_SymbolRef, function (compressor) {
             if (!compressor.option('reduce_vars') || this._evaluating)
@@ -1610,7 +1604,7 @@ merge(Compressor.prototype, {
                 if (!fixed)
                     throw def;
                 var value = ev(fixed, compressor);
-                if (!HOP(fixed))
+                if (!HOP(fixed, '_eval'))
                     fixed._eval = function () {
                         return value;
                     };
@@ -1642,10 +1636,9 @@ merge(Compressor.prototype, {
         var native_fns = {
             Array: makePredicate([
                 'indexOf',
-                'join',
                 'lastIndexOf',
                 'slice'
-            ].concat(object_fns)),
+            ].concat()),
             Boolean: makePredicate(object_fns),
             Number: makePredicate([
                 'toExponential',
@@ -1662,7 +1655,6 @@ merge(Compressor.prototype, {
                 'lastIndexOf',
                 'match',
                 'replace',
-                'search',
                 'slice',
                 'split',
                 'substr',
@@ -1675,7 +1667,7 @@ merge(Compressor.prototype, {
             if (compressor.option('unsafe') && exp instanceof AST_PropAccess) {
                 var key = exp.property;
                 if (key instanceof AST_Node) {
-                    key = ev(key, compressor);
+                    key = ev(key);
                 }
                 var val = ev(exp.expression, compressor);
                 if ((val && native_fns[val.constructor.name] || return_false)(key)) {
@@ -1684,9 +1676,6 @@ merge(Compressor.prototype, {
                     }));
                 }
             }
-            throw def;
-        });
-        def(AST_New, function (compressor) {
             throw def;
         });
     }(function (node, func) {
@@ -1700,7 +1689,7 @@ merge(Compressor.prototype, {
                 expression: exp
             });
         }
-        function best(orig, alt, first_in_statement) {
+        function best(orig, alt) {
             var negated = basic_negation(orig);
             if (first_in_statement) {
                 var stat = make_node(AST_SimpleStatement, alt, { body: alt });
@@ -1711,7 +1700,8 @@ merge(Compressor.prototype, {
         def(AST_Node, function () {
             return basic_negation(this);
         });
-        def(AST_Statement);
+        def(AST_Statement, function () {
+        });
         def(AST_Function, function () {
             return basic_negation(this);
         });
@@ -1725,15 +1715,27 @@ merge(Compressor.prototype, {
             expressions.push(expressions.pop().negate(compressor));
             return make_sequence(this, expressions);
         });
-        def(AST_Conditional, function (compressor, first_in_statement) {
+        def(AST_Conditional, function (compressor) {
             var self = this.clone();
             self.consequent = self.consequent.negate(compressor);
             self.alternative = self.alternative.negate(compressor);
             return best(this, self, first_in_statement);
         });
-        def(AST_Binary, function (compressor) {
+        def(AST_Binary, function (compressor, first_in_statement) {
             var self = this.clone(), op = this.operator;
-            if (compressor.option('unsafe_comps')) {
+            if (compressor.option()) {
+                switch (op) {
+                case '<=':
+                    self.operator = '>';
+                case '<':
+                    self.operator = '>=';
+                case '>=':
+                    self.operator = '<';
+                    return self;
+                case '>':
+                    self.operator = '<=';
+                    return self;
+                }
             }
             switch (op) {
             case '==':
@@ -1789,7 +1791,7 @@ merge(Compressor.prototype, {
                 return true;
             for (var i = this.args.length; --i >= 0;) {
                 if (this.args[i].has_side_effects(compressor))
-                    return;
+                    return true;
             }
             return false;
         });
@@ -1797,18 +1799,17 @@ merge(Compressor.prototype, {
             for (var i = list.length; --i >= 0;)
                 if (list[i].has_side_effects(compressor))
                     return true;
+            return;
         }
-        def(AST_Block, function (compressor) {
-            return any(this.body, compressor);
+        def(AST_Block, function () {
+            return any(this.body);
         });
         def(AST_Switch, function (compressor) {
             return this.expression.has_side_effects(compressor) || any(this.body, compressor);
         });
-        def(AST_Case, function (compressor) {
-            return this.expression.has_side_effects(compressor) || any(this.body, compressor);
-        });
+        def(AST_Case);
         def(AST_Try, function (compressor) {
-            return any(this.body, compressor) || this.bcatch && this.bcatch.has_side_effects(compressor) || this.bfinally && this.bfinally.has_side_effects(compressor);
+            return any(this.body) || this.bcatch && this.bcatch.has_side_effects(compressor) || this.bfinally && this.bfinally.has_side_effects(compressor);
         });
         def(AST_If, function (compressor) {
             return this.condition.has_side_effects(compressor) || this.body && this.body.has_side_effects(compressor) || this.alternative && this.alternative.has_side_effects(compressor);
@@ -1817,7 +1818,7 @@ merge(Compressor.prototype, {
             return this.body.has_side_effects(compressor);
         });
         def(AST_SimpleStatement, function (compressor) {
-            return this.body.has_side_effects(compressor);
+            return;
         });
         def(AST_Defun, return_true);
         def(AST_Function, return_false);
@@ -1826,7 +1827,7 @@ merge(Compressor.prototype, {
         });
         def(AST_Assign, return_true);
         def(AST_Conditional, function (compressor) {
-            return this.condition.has_side_effects(compressor) || this.consequent.has_side_effects(compressor) || this.alternative.has_side_effects();
+            return this.condition.has_side_effects(compressor) || this.consequent.has_side_effects(compressor) || this.alternative.has_side_effects(compressor);
         });
         def(AST_Unary, function (compressor) {
             return unary_side_effects(this.operator) || this.expression.has_side_effects(compressor);
@@ -1838,6 +1839,9 @@ merge(Compressor.prototype, {
         def(AST_Object, function (compressor) {
             return any(this.properties, compressor);
         });
+        def(AST_ObjectProperty, function (compressor) {
+            return this.value.has_side_effects(compressor);
+        });
         def(AST_Array, function (compressor) {
             return any(this.elements, compressor);
         });
@@ -1846,11 +1850,6 @@ merge(Compressor.prototype, {
         });
         def(AST_Sub, function (compressor) {
             return this.expression.may_throw_on_access(compressor) || this.expression.has_side_effects(compressor) || this.property.has_side_effects(compressor);
-        });
-        def(AST_Sequence, function (compressor) {
-            return this.expressions.some(function (expression, index) {
-                return expression.has_side_effects();
-            });
         });
     }(function (node, func) {
         node.DEFMETHOD('has_side_effects', func);
@@ -1861,13 +1860,10 @@ merge(Compressor.prototype, {
             for (var i = list.length; --i >= 0;)
                 if (!list[i].is_constant_expression())
                     return false;
-            return true;
+            return;
         }
         def(AST_Node, return_false);
         def(AST_Constant, return_true);
-        def(AST_Unary, function () {
-            return this.expression.is_constant_expression();
-        });
         def(AST_Binary, function () {
             return this.left.is_constant_expression() && this.right.is_constant_expression();
         });
@@ -1899,7 +1895,7 @@ merge(Compressor.prototype, {
         def(AST_BlockStatement, block_aborts);
         def(AST_SwitchBranch, block_aborts);
         def(AST_If, function () {
-            return this.alternative && aborts(this.body) && aborts(this.alternative) && this;
+            return this.alternative && aborts(this.body) && aborts() && this;
         });
     }(function (node, func) {
         node.DEFMETHOD('aborts', func);
@@ -1907,7 +1903,7 @@ merge(Compressor.prototype, {
     /* -----[ optimizers ]----- */
     OPT(AST_Directive, function (self, compressor) {
         if (compressor.has_directive(self.value) !== self) {
-            return make_node(AST_EmptyStatement, self);
+            return make_node(AST_EmptyStatement);
         }
         return self;
     });
@@ -2061,7 +2057,7 @@ merge(Compressor.prototype, {
                         sym.__unused = true;
                         if (trim) {
                             a.pop();
-                            compressor[sym.unreferenced() ? 'warn' : 'info']('Dropping unused function argument {name} [{file}:{line},{col}]');
+                            compressor[sym.unreferenced() ? 'warn' : 'info']('Dropping unused function argument {name} [{file}:{line},{col}]', template(sym));
                         }
                     } else {
                         trim = false;
@@ -2181,7 +2177,7 @@ merge(Compressor.prototype, {
                 } else if (is_empty(node.init)) {
                     node.init = null;
                 }
-                return node;
+                return;
             }
             if (node instanceof AST_LabeledStatement && node.body instanceof AST_For) {
                 descend(node, this);
@@ -2227,7 +2223,7 @@ merge(Compressor.prototype, {
                 }
             }));
             hoist_vars = hoist_vars && var_decl > 1;
-            var tt = new TreeTransformer(function before(node) {
+            var tt = new TreeTransformer(function (node) {
                 if (node !== self) {
                     if (node instanceof AST_Directive) {
                         dirs.push(node);
@@ -2235,7 +2231,7 @@ merge(Compressor.prototype, {
                     }
                     if (hoist_funs && node instanceof AST_Defun && (tt.parent() === self || !compressor.has_directive('use strict'))) {
                         hoisted.push(node);
-                        return make_node(AST_EmptyStatement, node);
+                        return make_node(AST_EmptyStatement);
                     }
                     if (hoist_vars && node instanceof AST_Var) {
                         node.definitions.forEach(function (def) {
@@ -2285,8 +2281,6 @@ merge(Compressor.prototype, {
                             var expr = self.body[i].body, sym, assign;
                             if (expr instanceof AST_Assign && expr.operator == '=' && (sym = expr.left) instanceof AST_Symbol && vars.has(sym.name)) {
                                 var def = vars.get(sym.name);
-                                if (def.value)
-                                    break;
                                 def.value = expr.right;
                                 remove(defs, def);
                                 defs.push(def);
@@ -2321,7 +2315,6 @@ merge(Compressor.prototype, {
                     defs = make_node(AST_Var, self, { definitions: defs });
                     hoisted.push(defs);
                 }
-                ;
             }
             self.body = dirs.concat(hoisted, self.body);
         }
@@ -2344,15 +2337,13 @@ merge(Compressor.prototype, {
                 changed |= node !== nodes[i];
                 if (node) {
                     merge_sequence(ret, node);
-                    first_in_statement = false;
                 }
             }
             return changed ? ret.length ? ret : null : nodes;
         }
-        def(AST_Node, return_this);
         def(AST_Constant, return_null);
         def(AST_This, return_null);
-        def(AST_Call, function (compressor, first_in_statement) {
+        def(AST_Call, function (compressor) {
             if (!this.has_pure_annotation(compressor) && compressor.pure_funcs(this)) {
                 if (this.expression instanceof AST_Function && (!this.expression.name || !this.expression.name.definition().references.length)) {
                     var node = this.clone();
@@ -2438,10 +2429,10 @@ merge(Compressor.prototype, {
             var values = trim(this.properties, compressor, first_in_statement);
             return values && make_sequence(this, values);
         });
-        def(AST_ObjectProperty, function (compressor, first_in_statement) {
-            return this.value.drop_side_effect_free(compressor);
+        def(AST_ObjectProperty, function (compressor) {
+            return this.value.drop_side_effect_free(compressor, first_in_statement);
         });
-        def(AST_Array, function (compressor) {
+        def(AST_Array, function (compressor, first_in_statement) {
             var values = trim(this.elements, compressor, first_in_statement);
             return values && make_sequence(this, values);
         });
@@ -2459,10 +2450,7 @@ merge(Compressor.prototype, {
             var property = this.property.drop_side_effect_free(compressor);
             if (!property)
                 return expression;
-            return make_sequence(this, [
-                expression,
-                property
-            ]);
+            return make_sequence();
         });
         def(AST_Sequence, function (compressor) {
             var last = this.expressions[this.expressions.length - 1];
@@ -2533,6 +2521,7 @@ merge(Compressor.prototype, {
             } else {
                 self.body = make_node(AST_BlockStatement, self.body, { body: rest }).transform(compressor);
             }
+            if_break_in_loop(self, compressor);
         }
         var first = self.body instanceof AST_BlockStatement ? self.body.body[0] : self.body;
         if (first instanceof AST_If) {
@@ -2572,14 +2561,13 @@ merge(Compressor.prototype, {
                 if (self.init instanceof AST_Statement) {
                     a.push(self.init);
                 } else if (self.init) {
-                    a.push(make_node(AST_SimpleStatement, { body: self.init }));
+                    a.push(make_node(AST_SimpleStatement, self.init, { body: self.init }));
                 }
                 extract_declarations_from_unreachable_code(compressor, self.body, a);
                 return make_node(AST_BlockStatement, self, { body: a }).optimize(compressor);
             }
             if (cond !== self.condition) {
                 cond = make_node_from_constant(cond, self.condition).transform(compressor);
-                self.condition = best_of_expression(cond, self.condition);
             }
         }
         if_break_in_loop(self, compressor);
@@ -2617,7 +2605,6 @@ merge(Compressor.prototype, {
                 }
             }
             cond = make_node_from_constant(cond, self.condition).transform(compressor);
-            self.condition = best_of_expression(cond, self.condition);
         }
         var negated = self.condition.negate(compressor);
         var self_condition_length = self.condition.print_to_string().length;
@@ -2788,7 +2775,7 @@ merge(Compressor.prototype, {
             return make_node(AST_BlockStatement, self, { body: decl.concat(make_node(AST_SimpleStatement, self.expression, { body: self.expression })) }).optimize(compressor);
         }
         if (body.length == 1 && (body[0] === exact_match || body[0] === default_branch)) {
-            var has_break = false;
+            var has_break;
             var tw = new TreeWalker(function (node) {
                 if (has_break || node instanceof AST_Lambda || node instanceof AST_SimpleStatement)
                     return true;
@@ -2870,7 +2857,7 @@ merge(Compressor.prototype, {
                     if (node) {
                         self.args[pos++] = node;
                     } else if (!trim) {
-                        self.args[pos++] = make_node(AST_Number, self.args[i], { value: 0 });
+                        self.args[pos++] = make_node(AST_Number, { value: 0 });
                         continue;
                     }
                 } else {
@@ -2887,10 +2874,9 @@ merge(Compressor.prototype, {
                     if (self.args.length != 1) {
                         return make_node(AST_Array, self, { elements: self.args }).optimize(compressor);
                     }
-                    break;
                 case 'Object':
                     if (self.args.length == 0) {
-                        return make_node(AST_Object, self);
+                        return make_node(AST_Object, self, { properties: [] });
                     }
                     break;
                 case 'String':
@@ -3004,10 +2990,7 @@ merge(Compressor.prototype, {
         if (compressor.option('unsafe_Func') && exp instanceof AST_SymbolRef && exp.undeclared() && exp.name == 'Function') {
             // new Function() => function(){}
             if (self.args.length == 0)
-                return make_node(AST_Function, self, {
-                    argnames: [],
-                    body: []
-                });
+                return;
             if (all(self.args, function (x) {
                     return x instanceof AST_String;
                 })) {
@@ -3031,7 +3014,7 @@ merge(Compressor.prototype, {
                             return true;
                         if (node instanceof AST_Lambda) {
                             fun = node;
-                            return;
+                            return true;
                         }
                     }));
                     var args = fun.argnames.map(function (arg, i) {
@@ -3045,7 +3028,8 @@ merge(Compressor.prototype, {
                     return self;
                 } catch (ex) {
                     if (ex instanceof JS_Parse_Error) {
-                        compressor.warn('Error parsing code passed to new Function [{file}:{line},{col}]', self.args[self.args.length - 1].start);
+                        compressor.warn('Error parsing code passed to new Function [{file}:{line},{col}]');
+                        compressor.warn(ex.toString());
                     } else {
                         throw ex;
                     }
@@ -3094,7 +3078,7 @@ merge(Compressor.prototype, {
                         return make_node(AST_Undefined, self);
                     if (body.length == 1 && body[0] instanceof AST_Return) {
                         if (!body[0].value)
-                            return make_node(AST_Undefined);
+                            return make_node(AST_Undefined, self);
                         body = best_of(compressor, body[0].value, self);
                     } else {
                         body = self;
@@ -3132,6 +3116,13 @@ merge(Compressor.prototype, {
     OPT(AST_New, function (self, compressor) {
         if (compressor.option('unsafe')) {
             var exp = self.expression;
+            if (exp instanceof AST_SymbolRef && exp.undeclared()) {
+                switch (exp.name) {
+                case 'Object':
+                case 'RegExp':
+                case 'Error':
+                }
+            }
         }
         return self;
     });
@@ -3252,7 +3243,7 @@ merge(Compressor.prototype, {
         if (self.operator == 'delete' && !(e instanceof AST_SymbolRef || e instanceof AST_PropAccess || e instanceof AST_NaN || e instanceof AST_Infinity || e instanceof AST_Undefined)) {
             if (e instanceof AST_Sequence) {
                 e = e.expressions.slice();
-                e.push(make_node(AST_True, self));
+                e.push(make_node(AST_True));
                 return make_sequence(self, e).optimize(compressor);
             }
             return make_sequence(self, [
@@ -3266,17 +3257,13 @@ merge(Compressor.prototype, {
         }
         if (compressor.option('side_effects') && self.operator == 'void') {
             e = e.drop_side_effect_free(compressor);
-            if (e) {
-                self.expression = e;
-                return self;
-            } else {
-                return make_node(AST_Undefined, self).optimize(compressor);
-            }
         }
         if (compressor.option('booleans') && compressor.in_boolean_context()) {
             switch (self.operator) {
             case '!':
                 if (e instanceof AST_UnaryPrefix && e.operator == '!') {
+                    // !!foo ==> foo, if we're in boolean context
+                    return e.expression;
                 }
                 if (e instanceof AST_Binary) {
                     self = best_of(compressor, self, e.negate(compressor, first_in_statement(compressor)));
@@ -3286,7 +3273,7 @@ merge(Compressor.prototype, {
                 // typeof always returns a non-empty string, thus it's
                 // always true in booleans
                 compressor.warn('Boolean expression always true [{file}:{line},{col}]', self.start);
-                return (e instanceof AST_SymbolRef ? make_node(AST_True, self) : make_sequence(self, [
+                return (e instanceof AST_SymbolRef ? make_node(AST_True) : make_sequence(self, [
                     e,
                     make_node(AST_True, self)
                 ])).optimize(compressor);
@@ -3378,7 +3365,7 @@ merge(Compressor.prototype, {
             switch (self.operator) {
             case '===':
             case '!==':
-                if (self.left.is_string(compressor) && self.right.is_string(compressor) || self.left.is_number(compressor) && self.right.is_number(compressor) || self.left.is_boolean() && self.right.is_boolean()) {
+                if (self.left.is_string() && self.right.is_string(compressor) || self.left.is_number(compressor) && self.right.is_number(compressor) || self.left.is_boolean() && self.right.is_boolean()) {
                     self.operator = self.operator.substr(0, 2);
                 }
             // XXX: intentionally falling down to the next case
@@ -3389,12 +3376,11 @@ merge(Compressor.prototype, {
                     var expr = self.right.expression;
                     if (expr instanceof AST_SymbolRef ? !expr.undeclared() : !(expr instanceof AST_PropAccess && compressor.option('ie8'))) {
                         self.right = expr;
-                        self.left = make_node(AST_Undefined).optimize(compressor);
+                        self.left = make_node(AST_Undefined, self.left).optimize(compressor);
                         if (self.operator.length == 2)
                             self.operator += '=';
                     }
                 }
-                break;
             }
         if (compressor.option('booleans') && self.operator == '+' && compressor.in_boolean_context()) {
             var ll = self.left.evaluate(compressor);
@@ -3437,12 +3423,11 @@ merge(Compressor.prototype, {
             if (self.right instanceof AST_String && self.right.getValue() == '' && self.left.is_string(compressor)) {
                 return self.left;
             }
-            if (self.left instanceof AST_String && self.left.getValue() == '' && self.right.is_string(compressor)) {
+            if (self.left instanceof AST_String && self.left.getValue() == '' && self.right.is_string()) {
                 return self.right;
             }
             if (self.left instanceof AST_Binary && self.left.operator == '+' && self.left.left instanceof AST_String && self.left.left.getValue() == '' && self.right.is_string(compressor)) {
                 self.left = self.left.right;
-                return self.transform(compressor);
             }
         }
         if (compressor.option('evaluate')) {
@@ -3462,11 +3447,11 @@ merge(Compressor.prototype, {
                         compressor.warn('Boolean && always false [{file}:{line},{col}]', self.start);
                         return make_sequence(self, [
                             self.left,
-                            make_node(AST_False)
+                            make_node(AST_False, self)
                         ]).optimize(compressor);
                     } else if (rr !== self.right) {
-                        compressor.warn();
-                        return self.left.optimize(compressor);
+                        compressor.warn('Dropping side-effect-free && in boolean context [{file}:{line},{col}]', self.start);
+                        return;
                     }
                 }
                 break;
@@ -3510,7 +3495,7 @@ merge(Compressor.prototype, {
                     });
                 }
                 // (x + "foo") + "bar" => x + "foobar"
-                if (self.right instanceof AST_Constant && self.left instanceof AST_Binary && self.left.operator == '+' && self.left.right instanceof AST_Constant && self.left.is_string(compressor)) {
+                if (self.right instanceof AST_Constant && self.left instanceof AST_Binary && self.left.operator == '+' && self.left.right instanceof AST_Constant && self.left.is_string()) {
                     self = make_node(AST_Binary, self, {
                         operator: '+',
                         left: self.left.left,
@@ -3523,19 +3508,6 @@ merge(Compressor.prototype, {
                 }
                 // (x + "foo") + ("bar" + y) => (x + "foobar") + y
                 if (self.left instanceof AST_Binary && self.left.operator == '+' && self.left.is_string(compressor) && self.left.right instanceof AST_Constant && self.right instanceof AST_Binary && self.right.operator == '+' && self.right.left instanceof AST_Constant && self.right.is_string(compressor)) {
-                    self = make_node(AST_Binary, self, {
-                        operator: '+',
-                        left: make_node(AST_Binary, self.left, {
-                            operator: '+',
-                            left: self.left.left,
-                            right: make_node(AST_String, self.left.right, {
-                                value: '' + self.left.right.getValue() + self.right.left.getValue(),
-                                start: self.left.right.start,
-                                end: self.right.left.end
-                            })
-                        }),
-                        right: self.right.right
-                    });
                 }
                 // a + -b => a - b
                 if (self.right instanceof AST_UnaryPrefix && self.right.operator == '-' && self.left.is_number(compressor)) {
@@ -3581,6 +3553,7 @@ merge(Compressor.prototype, {
                             left: make_node(AST_Binary, self.left, {
                                 operator: self.operator,
                                 left: self.left,
+                                right: self.right.left,
                                 start: self.left.start,
                                 end: self.right.left.end
                             }),
@@ -3609,8 +3582,7 @@ merge(Compressor.prototype, {
                                     operator: self.operator,
                                     left: self.left.right,
                                     right: self.right,
-                                    start: self.left.right.start,
-                                    end: self.right.end
+                                    start: self.left.right.start
                                 }),
                                 right: self.left.left
                             });
@@ -3625,6 +3597,7 @@ merge(Compressor.prototype, {
                                 left: make_node(AST_Binary, self.left.left, {
                                     operator: self.operator,
                                     left: self.left.right,
+                                    right: self.right.left,
                                     start: self.left.right.start,
                                     end: self.right.left.end
                                 }),
@@ -3685,19 +3658,19 @@ merge(Compressor.prototype, {
                 if (d.should_replace === undefined) {
                     var init = fixed.evaluate(compressor);
                     if (init !== fixed && (compressor.option('unsafe_regexp') || !(init instanceof RegExp))) {
-                        init = make_node_from_constant(init, fixed);
+                        init = make_node_from_constant(init);
                         var value_length = init.optimize(compressor).print_to_string().length;
                         var fn;
                         if (has_symbol_ref(fixed)) {
                             fn = function () {
                                 var result = init.optimize(compressor);
-                                return result === init ? result.clone(true) : result;
+                                return result === init ? result.clone() : result;
                             };
                         } else {
                             value_length = Math.min(value_length, fixed.print_to_string().length);
                             fn = function () {
                                 var result = best_of_expression(init.optimize(compressor), fixed);
-                                return result === init || result === fixed ? result.clone() : result;
+                                return result === init || result === fixed ? result.clone(true) : result;
                             };
                         }
                         var name_length = d.name.length;
@@ -3954,7 +3927,13 @@ merge(Compressor.prototype, {
         if (compressor.option('booleans')) {
             var p = compressor.parent();
             if (p instanceof AST_Binary && (p.operator == '==' || p.operator == '!=')) {
-                compressor.warn('Non-strict equality against boolean: {operator} {value} [{file}:{line},{col}]');
+                compressor.warn('Non-strict equality against boolean: {operator} {value} [{file}:{line},{col}]', {
+                    operator: p.operator,
+                    value: self.value,
+                    file: p.start.file,
+                    line: p.start.line,
+                    col: p.start.col
+                });
                 return make_node(AST_Number, self, { value: +self.value });
             }
             return make_node(AST_UnaryPrefix, self, {
@@ -3981,7 +3960,7 @@ merge(Compressor.prototype, {
         }
         var ev = self.evaluate(compressor);
         if (ev !== self) {
-            ev = make_node_from_constant(ev, self).optimize(compressor);
+            ev = make_node_from_constant(ev).optimize(compressor);
             return best_of(compressor, ev, self);
         }
         return self;

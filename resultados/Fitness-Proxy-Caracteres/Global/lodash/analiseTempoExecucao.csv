@@ -1,11 +1,11 @@
 Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
-lodash;Original;-;1;0;49636;0;61694;0;0
-lodash;RD;N/A;1;0;49636;0;61694;0;0
-lodash;GA;N/A;1;0;49636;0;61694;0;0
-lodash;GA2;N/A;1;0;49636;0;61694;0;0
-lodash;HC;N/A;1;0;49636;0;61694;0;0
-lodash;HC2;N/A;1;0;49636;0;61694;0;0
-lodash;HC3;2;1;0;45844;0.07639616407446208;56132;0.09015463416215515;NaN
-lodash;HC4;N/A;1;0;49636;0;61694;0;0
-lodash;HC5;N/A;1;0;49636;0;61694;0;0
-lodash;HC52;N/A;1;0;49636;0;61694;0;0
+lodash;Original;-;1;0;48972;0;60995;0;0
+lodash;RD;N/A;1;0;48972;0;60995;0;0
+lodash;GA;N/A;1;0;48972;0;60995;0;0
+lodash;GA2;N/A;1;0;48972;0;60995;0;0
+lodash;HC;N/A;1;0;48972;0;60995;0;0
+lodash;HC2;N/A;1;0;48972;0;60995;0;0
+lodash;HC3;22;1;0;45100;0.07906558849955077;55192;0.09513894581523076;NaN
+lodash;HC4;N/A;1;0;48972;0;60995;0;0
+lodash;HC5;N/A;1;0;48972;0;60995;0;0
+lodash;HC52;N/A;1;0;48972;0;60995;0;0
