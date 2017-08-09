@@ -27,10 +27,10 @@
     /** Used as the internal argument placeholder. */
     var PLACEHOLDER = '__lodash_placeholder__';
     /** `Object#toString` result references. */
-    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', mapTag = '[object Map]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', stringTag = '[object String]';
+    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', stringTag = '[object String]';
     var arrayBufferTag = '[object ArrayBuffer]', float32Tag = '[object Float32Array]', float64Tag = '[object Float64Array]', int8Tag = '[object Int8Array]', int16Tag = '[object Int16Array]', int32Tag = '[object Int32Array]', uint8Tag = '[object Uint8Array]', uint8ClampedTag = '[object Uint8ClampedArray]', uint16Tag = '[object Uint16Array]', uint32Tag = '[object Uint32Array]';
     /** Used to match empty string literals in compiled template source. */
-    var reEmptyStringLeading = /\b__p \+= '';/g;
+    var reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
     /** Used to match HTML entities and HTML characters. */
     var reEscapedHtml = /&(?:amp|lt|gt|quot|#39|#96);/g, reUnescapedHtml = /[&<>"'`]/g, reHasEscapedHtml = RegExp(), reHasUnescapedHtml = RegExp();
     /** Used to match template delimiters. */
@@ -605,7 +605,7 @@
         // See https://es5.github.io/#x11.1.5 for more details.
         context = context ? _.defaults(context, _.pick(root, contextProps)) : root;
         /** Native constructor references. */
-        var String = context.String;
+        var TypeError = context.TypeError;
         /** Used for native method references. */
         var arrayProto = Array.prototype, objectProto = Object.prototype, stringProto = String.prototype;
         /** Used to resolve the decompiled source of functions. */
@@ -626,7 +626,7 @@
         /** Used to detect if a method is native. */
         var reIsNative = RegExp('^' + fnToString.call(hasOwnProperty).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
         /** Native value references. */
-        var Uint8Array = context.Uint8Array, WeakMap = getNative(context, 'WeakMap'), clearTimeout = context.clearTimeout, enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, pow = Math.pow, setTimeout = context.setTimeout, splice = arrayProto.splice;
+        var enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, pow = Math.pow, splice = arrayProto.splice;
         /* Native method references for those with the same name as other `lodash` methods. */
         var nativeCeil = Math.ceil, nativeFloor = Math.floor, nativeIsFinite = context.isFinite, nativeMax = Math.max, nativeMin = Math.min, nativeParseInt = context.parseInt, nativeRandom = Math.random;
         /** Used as references for `-Infinity` and `Infinity`. */
@@ -6098,7 +6098,7 @@
      * delete models.todo;
      */
         function debounce(func, wait, options) {
-            var maxTimeoutId, result, timeoutId, trailingCall, lastCalled = 0, maxWait = false, trailing = true;
+            var maxTimeoutId, result, timeoutId, trailingCall, leading = false, trailing = true;
             if (typeof func != 'function') {
                 throw new TypeError(FUNC_ERROR_TEXT);
             }
@@ -6119,6 +6119,7 @@
             }
             function complete(isCalled, id) {
                 if (id) {
+                    clearTimeout(id);
                 }
                 maxTimeoutId = timeoutId = trailingCall = undefined;
                 if (isCalled) {
@@ -6652,9 +6653,8 @@
      * jQuery(window).on('popstate', throttled.cancel);
      */
         function throttle(func, wait, options) {
-            var trailing = true;
+            var leading = true, trailing = true;
             if (typeof func != 'function') {
-                throw new TypeError(FUNC_ERROR_TEXT);
             }
             if (isObject(options)) {
                 leading = 'leading' in options ? !!options.leading : leading;
@@ -9264,6 +9264,7 @@
             var value = string;
             string = baseToString(string);
             if (!string) {
+                return string;
             }
             if (guard || chars == null) {
                 return string.slice(trimmedLeftIndex(string));

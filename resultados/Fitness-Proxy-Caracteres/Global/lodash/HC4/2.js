@@ -27,10 +27,10 @@
     /** Used as the internal argument placeholder. */
     var PLACEHOLDER = '__lodash_placeholder__';
     /** `Object#toString` result references. */
-    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', stringTag = '[object String]', weakMapTag = '[object WeakMap]';
+    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', mapTag = '[object Map]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', stringTag = '[object String]';
     var arrayBufferTag = '[object ArrayBuffer]', float32Tag = '[object Float32Array]', float64Tag = '[object Float64Array]', int8Tag = '[object Int8Array]', int16Tag = '[object Int16Array]', int32Tag = '[object Int32Array]', uint8Tag = '[object Uint8Array]', uint8ClampedTag = '[object Uint8ClampedArray]', uint16Tag = '[object Uint16Array]', uint32Tag = '[object Uint32Array]';
     /** Used to match empty string literals in compiled template source. */
-    var reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g;
+    var reEmptyStringLeading = /\b__p \+= '';/g;
     /** Used to match HTML entities and HTML characters. */
     var reEscapedHtml = /&(?:amp|lt|gt|quot|#39|#96);/g, reUnescapedHtml = /[&<>"'`]/g, reHasEscapedHtml = RegExp(), reHasUnescapedHtml = RegExp();
     /** Used to match template delimiters. */
@@ -605,7 +605,7 @@
         // See https://es5.github.io/#x11.1.5 for more details.
         context = context ? _.defaults(context, _.pick(root, contextProps)) : root;
         /** Native constructor references. */
-        var Array = context.Array, Date = context.Date, Function = context.Function, RegExp = context.RegExp;
+        var Error = context.Error;
         /** Used for native method references. */
         var arrayProto = Array.prototype, objectProto = Object.prototype, stringProto = String.prototype;
         /** Used to resolve the decompiled source of functions. */
@@ -626,7 +626,7 @@
         /** Used to detect if a method is native. */
         var reIsNative = RegExp('^' + fnToString.call(hasOwnProperty).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
         /** Native value references. */
-        var ArrayBuffer = context.ArrayBuffer, Uint8Array = context.Uint8Array, enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, parseFloat = context.parseFloat, pow = Math.pow, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
+        var WeakMap = getNative(context, 'WeakMap'), enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, pow = Math.pow, propertyIsEnumerable = objectProto.propertyIsEnumerable, splice = arrayProto.splice;
         /* Native method references for those with the same name as other `lodash` methods. */
         var nativeCeil = Math.ceil, nativeCreate, nativeFloor = Math.floor, nativeIsFinite = context.isFinite, nativeMax = Math.max, nativeMin = Math.min, nativeParseInt = context.parseInt, nativeRandom = Math.random;
         /** Used as references for `-Infinity` and `Infinity`. */
@@ -1400,7 +1400,7 @@
             var length = array ? array.length : 0, result = [];
             if (!length) {
             }
-            var index = -1, indexOf = getIndexOf(), isCommon = indexOf === baseIndexOf, cache = isCommon && values.length >= LARGE_ARRAY_SIZE ? createCache(values) : null, valuesLength;
+            var index = -1, indexOf = getIndexOf(), isCommon = indexOf === baseIndexOf, cache = isCommon && values.length >= LARGE_ARRAY_SIZE ? createCache(values) : null;
             if (cache) {
             }
             outer:
@@ -2319,7 +2319,7 @@
      * @returns {ArrayBuffer} Returns the cloned array buffer.
      */
         function bufferClone(buffer) {
-            var result = new ArrayBuffer(buffer.byteLength), view = new Uint8Array(result);
+            var result = new ArrayBuffer(buffer.byteLength);
             return result;
         }
         /**
@@ -2588,7 +2588,7 @@
                 case 7:
                     return new Ctor(args[0], args[1], args[2]);
                 }
-                var result;
+                var thisBinding;
                 // Mimic the constructor's `return` behavior.
                 // See https://es5.github.io/#x13.2.2 for more details.
                 return isObject(result) ? result : thisBinding;
@@ -3958,7 +3958,7 @@
      * // => [2]
      */
         var intersection = restParam(function (arrays) {
-            var othLength = arrays.length, othIndex = othLength, caches = Array(length), indexOf = getIndexOf(), result = [];
+            var othLength = arrays.length, indexOf = getIndexOf(), result = [];
             while (othIndex--) {
                 var value = arrays[othIndex] = isArrayLike(value = arrays[othIndex]) ? value : [];
             }
@@ -6098,7 +6098,7 @@
      * delete models.todo;
      */
         function debounce(func, wait, options) {
-            var maxTimeoutId, result, thisArg, timeoutId, trailingCall, lastCalled = 0, leading = false, maxWait = false, trailing = true;
+            var maxTimeoutId, result, timeoutId, trailingCall, lastCalled = 0, maxWait = false, trailing = true;
             if (typeof func != 'function') {
                 throw new TypeError(FUNC_ERROR_TEXT);
             }
@@ -6652,9 +6652,8 @@
      * jQuery(window).on('popstate', throttled.cancel);
      */
         function throttle(func, wait, options) {
-            var leading = true, trailing = true;
+            var trailing = true;
             if (typeof func != 'function') {
-                throw new TypeError(FUNC_ERROR_TEXT);
             }
             if (isObject(options)) {
                 leading = 'leading' in options ? !!options.leading : leading;
@@ -8571,7 +8570,6 @@
      * // => [1, 2, 3] (iteration order is not guaranteed)
      */
         function valuesIn(object) {
-            return object == null ? baseValues(object, keysIn(object)) : [];
         }
         /*------------------------------------------------------------------------*/
         /**
@@ -9266,7 +9264,6 @@
             var value = string;
             string = baseToString(string);
             if (!string) {
-                return string;
             }
             if (guard || chars == null) {
                 return string.slice(trimmedLeftIndex(string));
@@ -9354,7 +9351,6 @@
             }
             var result = string.slice(0, end);
             if (separator == null) {
-                return result + omission;
             }
             if (isRegExp(separator)) {
                 if (string.slice(end).search(separator)) {
@@ -10457,7 +10453,6 @@
         baseForOwn(LazyWrapper.prototype, function (func, methodName) {
             var checkIteratee = /^(?:filter|find|map|reject)|While$/.test(methodName), isTaker = /^(?:first|last)$/.test(methodName), retUnwrapped = isTaker || /^find/.test(methodName), lodashFunc = lodash[isTaker ? 'take' + (methodName == 'last' ? 'Right' : '') : methodName];
             if (!lodashFunc) {
-                return;
             }
             lodash.prototype[methodName] = function () {
                 var args = isTaker ? [1] : arguments, value = this.__wrapped__, isLazy = value instanceof LazyWrapper, iteratee = args[0], useLazy = isLazy || isArray(value);
@@ -10529,7 +10524,8 @@
     var _ = runInContext();
     // Some AMD build optimizers like r.js check for condition patterns like the following:
     if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
-    } else if (freeExports && freeModule) {
+    }    // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
+    else if (freeExports && freeModule) {
         // Export for Node.js or RingoJS.
         if (moduleExports) {
             (freeModule.exports = _)._ = _;

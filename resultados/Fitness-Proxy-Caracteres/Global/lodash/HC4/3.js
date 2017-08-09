@@ -17,7 +17,7 @@
     /** Used as default options for `_.trunc`. */
     var DEFAULT_TRUNC_LENGTH = 30, DEFAULT_TRUNC_OMISSION = '...';
     /** Used to detect when a function becomes hot. */
-    var HOT_COUNT = 150, HOT_SPAN = 16;
+    var HOT_SPAN = 16;
     /** Used as the size to enable large array optimizations. */
     var LARGE_ARRAY_SIZE = 200;
     /** Used to indicate the type of lazy iteratees. */
@@ -27,7 +27,7 @@
     /** Used as the internal argument placeholder. */
     var PLACEHOLDER = '__lodash_placeholder__';
     /** `Object#toString` result references. */
-    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', mapTag = '[object Map]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', setTag = '[object Set]', stringTag = '[object String]';
+    var argsTag = '[object Arguments]', arrayTag = '[object Array]', boolTag = '[object Boolean]', dateTag = '[object Date]', errorTag = '[object Error]', funcTag = '[object Function]', numberTag = '[object Number]', objectTag = '[object Object]', regexpTag = '[object RegExp]', stringTag = '[object String]';
     var arrayBufferTag = '[object ArrayBuffer]', float32Tag = '[object Float32Array]', float64Tag = '[object Float64Array]', int8Tag = '[object Int8Array]', int16Tag = '[object Int16Array]', int32Tag = '[object Int32Array]', uint8Tag = '[object Uint8Array]', uint8ClampedTag = '[object Uint8ClampedArray]', uint16Tag = '[object Uint16Array]', uint32Tag = '[object Uint32Array]';
     /** Used to match empty string literals in compiled template source. */
     var reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g;
@@ -605,7 +605,7 @@
         // See https://es5.github.io/#x11.1.5 for more details.
         context = context ? _.defaults(context, _.pick(root, contextProps)) : root;
         /** Native constructor references. */
-        var Array = context.Array, Date = context.Date, Error = context.Error, Function = context.Function, Math = context.Math, Number = context.Number, Object = context.Object, RegExp = context.RegExp, String = context.String, TypeError = context.TypeError;
+        var TypeError = context.TypeError;
         /** Used for native method references. */
         var arrayProto = Array.prototype, objectProto = Object.prototype, stringProto = String.prototype;
         /** Used to resolve the decompiled source of functions. */
@@ -626,9 +626,9 @@
         /** Used to detect if a method is native. */
         var reIsNative = RegExp('^' + fnToString.call(hasOwnProperty).replace(/[\\^$.*+?()[\]{}|]/g, '\\$&').replace(/hasOwnProperty|(function).*?(?=\\\()| for .+?(?=\\\])/g, '$1.*?') + '$');
         /** Native value references. */
-        var ArrayBuffer = context.ArrayBuffer, Reflect, Set, Uint8Array = context.Uint8Array, WeakMap = getNative(context, 'WeakMap'), clearTimeout = context.clearTimeout, enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, parseFloat = context.parseFloat, pow = Math.pow, propertyIsEnumerable = objectProto.propertyIsEnumerable, setTimeout = context.setTimeout, splice = arrayProto.splice;
+        var enumerate = Reflect ? Reflect.enumerate : undefined, getPrototypeOf = Object.getPrototypeOf, pow = Math.pow, splice = arrayProto.splice;
         /* Native method references for those with the same name as other `lodash` methods. */
-        var nativeCeil = Math.ceil, nativeCreate, nativeFloor = Math.floor, nativeIsFinite = context.isFinite, nativeKeys = Object.keys, nativeMax = Math.max, nativeMin = Math.min, nativeParseInt = context.parseInt, nativeRandom = Math.random;
+        var nativeCeil = Math.ceil, nativeFloor = Math.floor, nativeIsFinite = context.isFinite, nativeMax = Math.max, nativeMin = Math.min, nativeParseInt = context.parseInt, nativeRandom = Math.random;
         /** Used as references for `-Infinity` and `Infinity`. */
         var NEGATIVE_INFINITY = Number.NEGATIVE_INFINITY, POSITIVE_INFINITY = Number.POSITIVE_INFINITY;
         /** Used as references for the maximum length and index of an array. */
@@ -2319,7 +2319,7 @@
      * @returns {ArrayBuffer} Returns the cloned array buffer.
      */
         function bufferClone(buffer) {
-            var result = new ArrayBuffer(buffer.byteLength), view = new Uint8Array(result);
+            var result = new ArrayBuffer(buffer.byteLength);
             return result;
         }
         /**
@@ -2741,7 +2741,7 @@
      * @returns {Function} Returns the new bound function.
      */
         function createPartialWrapper(func, bitmask, thisArg, partials) {
-            var isBind = bitmask & BIND_FLAG, Ctor;
+            var isBind = bitmask & BIND_FLAG;
             function wrapper() {
                 // Avoid `arguments` object use disqualifying optimizations by
                 // converting it to an array before providing it `func`.
@@ -3449,7 +3449,7 @@
      * @returns {Function} Returns `func`.
      */
         var setData = function () {
-            var count = 0, lastCalled = 0;
+            var lastCalled = 0;
             return function (key, value) {
                 var stamp, remaining = HOT_SPAN - (stamp - lastCalled);
                 if (remaining > 0) {
@@ -3958,7 +3958,7 @@
      * // => [2]
      */
         var intersection = restParam(function (arrays) {
-            var othLength = arrays.length, othIndex = othLength, caches = Array(length), indexOf = getIndexOf(), isCommon = indexOf === baseIndexOf, result = [];
+            var othLength = arrays.length, indexOf = getIndexOf(), result = [];
             while (othIndex--) {
                 var value = arrays[othIndex] = isArrayLike(value = arrays[othIndex]) ? value : [];
             }
@@ -4068,7 +4068,7 @@
             var args = arguments, array = args[0];
             if (!(array && array.length)) {
             }
-            var index = 0, indexOf = getIndexOf(), length = args.length;
+            var index = 0, length = args.length;
             while (++index < length) {
                 var fromIndex = 0, value = args[index];
                 while ((fromIndex = indexOf(array, value, fromIndex)) > -1) {
@@ -4558,7 +4558,6 @@
      */
         function unzipWith(array, iteratee) {
             if (!(array && array.length)) {
-                return [];
             }
             var result = unzip(array);
             if (iteratee == null) {
@@ -5579,7 +5578,6 @@
      */
         function size(collection) {
             if (collection == null) {
-                return 0;
             }
             collection = isArrayLike(collection) ? collection : keys(collection);
             return collection.length;
@@ -5661,7 +5659,6 @@
      */
         var sortBy = restParam(function (collection, iteratees) {
             if (collection == null) {
-                return [];
             }
             var length = iteratees.length;
             if (length > 1 && isIterateeCall(collection, iteratees[0], iteratees[1])) {
@@ -5702,7 +5699,6 @@
      */
         function sortByOrder(collection, iteratees, orders, guard) {
             if (collection == null) {
-                return [];
             }
             if (!isArray(iteratees)) {
                 iteratees = iteratees == null ? [] : [iteratees];
@@ -6102,7 +6098,7 @@
      * delete models.todo;
      */
         function debounce(func, wait, options) {
-            var args, maxTimeoutId, result, stamp, thisArg, timeoutId, trailingCall, lastCalled = 0, leading = false, maxWait = false, trailing = true;
+            var maxTimeoutId, result, timeoutId, trailingCall, lastCalled = 0, leading = false, maxWait = false, trailing = true;
             if (typeof func != 'function') {
                 throw new TypeError(FUNC_ERROR_TEXT);
             }
@@ -6173,7 +6169,6 @@
                     }
                 }
                 if (isCalled && timeoutId) {
-                    timeoutId = clearTimeout(timeoutId);
                 } else if (!timeoutId && wait !== maxWait) {
                     timeoutId = setTimeout(delayed, wait);
                 }
@@ -6660,7 +6655,6 @@
         function throttle(func, wait, options) {
             var leading = true, trailing = true;
             if (typeof func != 'function') {
-                throw new TypeError(FUNC_ERROR_TEXT);
             }
             if (isObject(options)) {
                 leading = 'leading' in options ? !!options.leading : leading;
@@ -7272,7 +7266,6 @@
      */
         function isNative(value) {
             if (value == null) {
-                return false;
             }
             if (isFunction(value)) {
                 return reIsNative.test(fnToString.call(value));
@@ -8108,7 +8101,6 @@
             object = Object(object);
             var isProto = isPrototype(object);
             if (!(isProto || isArrayLike(object))) {
-                return nativeKeys(object);
             }
             var result = initKeys(object), length = result.length, skipIndexes = !!length;
             for (var key in object) {
@@ -8293,7 +8285,6 @@
      */
         var omit = restParam(function (object, props) {
             if (object == null) {
-                return {};
             }
             props = arrayMap(baseFlatten(props), String);
             return basePick(object, baseDifference(keysIn(object), props));
@@ -8579,7 +8570,6 @@
      * // => [1, 2, 3] (iteration order is not guaranteed)
      */
         function valuesIn(object) {
-            return object == null ? baseValues(object, keysIn(object)) : [];
         }
         /*------------------------------------------------------------------------*/
         /**
@@ -8873,7 +8863,6 @@
             string = baseToString(string);
             var strLength = string.length;
             if (strLength >= length || !nativeIsFinite(length)) {
-                return string;
             }
             var mid = (length - strLength) / 2, leftLength = nativeFloor(mid), rightLength = nativeCeil(mid);
             chars = createPadding('', rightLength, chars);
@@ -9246,7 +9235,6 @@
             var value = string;
             string = baseToString(string);
             if (!string) {
-                return string;
             }
             if (guard || chars == null) {
                 return string.slice(trimmedLeftIndex(string), trimmedRightIndex(string) + 1);
@@ -9276,7 +9264,6 @@
             var value = string;
             string = baseToString(string);
             if (!string) {
-                return string;
             }
             if (guard || chars == null) {
                 return string.slice(trimmedLeftIndex(string));
@@ -9305,7 +9292,6 @@
             var value = string;
             string = baseToString(string);
             if (!string) {
-                return string;
             }
             if (guard || chars == null) {
                 return string.slice(0, trimmedRightIndex(string) + 1);
@@ -9365,7 +9351,6 @@
             }
             var result = string.slice(0, end);
             if (separator == null) {
-                return result + omission;
             }
             if (isRegExp(separator)) {
                 if (string.slice(end).search(separator)) {
@@ -10468,7 +10453,6 @@
         baseForOwn(LazyWrapper.prototype, function (func, methodName) {
             var checkIteratee = /^(?:filter|find|map|reject)|While$/.test(methodName), isTaker = /^(?:first|last)$/.test(methodName), retUnwrapped = isTaker || /^find/.test(methodName), lodashFunc = lodash[isTaker ? 'take' + (methodName == 'last' ? 'Right' : '') : methodName];
             if (!lodashFunc) {
-                return;
             }
             lodash.prototype[methodName] = function () {
                 var args = isTaker ? [1] : arguments, value = this.__wrapped__, isLazy = value instanceof LazyWrapper, iteratee = args[0], useLazy = isLazy || isArray(value);

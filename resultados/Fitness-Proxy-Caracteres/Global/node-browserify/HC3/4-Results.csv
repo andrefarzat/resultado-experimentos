@@ -1,3 +1,4 @@
 sep=,
 trial,originalIndividualAvgTime,originalIndividualLOC,originalIndividualCharacters,bestIndividualAvgTime,bestIndividualLOC,bestIndividualCharacters,time,better
 4,"24377",757,24377,"23947",757,23947,"22283,772",true
+4,"24377",757,24377,"23947",757,23947,"25234,826",true

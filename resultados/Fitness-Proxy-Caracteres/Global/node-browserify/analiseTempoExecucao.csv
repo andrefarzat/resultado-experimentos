@@ -1,11 +1,14 @@
 Lib;Heuristic;Trial;Lines;% Improved Loc;Chars;% Improved Chars;Instructions;% Improved Instructions;Time Spent
-node-browserify;Original;-;1;0;13120;0;12487;0;0
-node-browserify;RD;26;1;0;11305;0.13833841463414634;10724;0.14118683430767998;NaN
-node-browserify;GA;N/A;1;0;13120;0;12487;0;0
-node-browserify;GA2;N/A;1;0;13120;0;12487;0;0
-node-browserify;HC;N/A;1;0;13120;0;12487;0;0
-node-browserify;HC2;N/A;1;0;13120;0;12487;0;0
-node-browserify;HC3;0;1;0;12792;0.025;12099;0.03107231520781613;NaN
-node-browserify;HC4;N/A;1;0;13120;0;12487;0;0
-node-browserify;HC5;N/A;1;0;13120;0;12487;0;0
-node-browserify;HC52;N/A;1;0;13120;0;12487;0;0
+node-browserify;Original;-;1;0;13099;0;12470;0;0
+node-browserify;RD;26;1;0;11285;0.1384838537292923;10720;0.14033680834001605;NaN
+node-browserify;GA;N/A;1;0;13099;0;12470;0;0
+node-browserify;GA2;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC2;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC3;5;1;0;12774;0.024811054278952593;12087;0.030713712910986367;NaN
+node-browserify;HC4;3;1;0;12774;0.024811054278952593;12087;0.030713712910986367;NaN
+node-browserify;HC42;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC5;0;1;0;12774;0.024811054278952593;12087;0.030713712910986367;NaN
+node-browserify;HC32;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC42;N/A;1;0;13099;0;12470;0;0
+node-browserify;HC52;N/A;1;0;13099;0;12470;0;0
